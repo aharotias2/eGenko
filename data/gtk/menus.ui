@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- This is a menu which is popped up when the menu button at top-right corner of the parent window
+       was clicked -->
+  <menu id="hamburger-menu">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Open File...</attribute>
+	<attribute name="action">win.open</attribute>
+	<attribute name="icon">document-open</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Save</attribute>
+	<attribute name="action">win.save</attribute>
+	<attribute name="target" type="b">false</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Save As...</attribute>
+	<attribute name="action">win.save</attribute>
+	<attribute name="target" type="b">true</attribute>
+      </item>
+    </section>
+    <section>
+      <submenu id="edit-menu">
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Undo</attribute>
+	    <attribute name="action">win.undo</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Redo</attribute>
+	    <attribute name="action">win.redo</attribute>
+	  </item>
+	</section>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Cut</attribute>
+	    <attribute name="action">win.cut</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Copy</attribute>
+	    <attribute name="action">win.copy</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Paste</attribute>
+	    <attribute name="action">win.paste</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Delete</attribute>
+	    <attribute name="action">win.delete</attribute>
+	  </item>
+	</section>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Select All</attribute>
+	    <attribute name="action">win.select-all</attribute>
+	  </item>
+	</section>
+      </submenu>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Search...</attribute>
+	<attribute name="action">win.search</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Replace...</attribute>
+	<attribute name="action">win.replace</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">About...</attribute>
+	<attribute name="action">win.show_info</attribute>
+      </item>
+    </section>
+  </menu>
+
+  <!-- This is a menu which is popped up when mouse button was clicked. -->
+  <menu id="context-menu">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Undo</attribute>
+	<attribute name="action">win.undo</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Redo</attribute>
+	<attribute name="action">win.redo</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Cut</attribute>
+	<attribute name="action">win.cut</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Copy</attribute>
+	<attribute name="action">win.copy</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Paste</attribute>
+	<attribute name="action">win.paste</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Delete</attribute>
+	<attribute name="action">win.delete</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Select All</attribute>
+	<attribute name="action">win.select-all</attribute>
+      </item>
+    </section>
+  </menu>
+
+  <!-- This is a menu which is displayed at below of the parent window's header bar
+       if "show_menu" property was set to true. -->
+  <menu id="menubar">
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">File</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">New</attribute>
+	    <attribute name="action">win.new</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Open File...</attribute>
+	    <attribute name="action">win.open</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Save</attribute>
+	    <attribute name="action">win.save</attribute>
+	    <attribute name="target" type="b">false</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Save As...</attribute>
+	    <attribute name="action">win.save</attribute>
+	    <attribute name="target" type="b">true</attribute>
+	  </item>
+	</section>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Quit</attribute>
+	    <attribute name="action">win.quit</attribute>
+	  </item>
+	</section>
+      </submenu>
+      <submenu>
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Undo</attribute>
+	    <attribute name="action">win.undo</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Redo</attribute>
+	    <attribute name="action">win.redo</attribute>
+	  </item>
+	</section>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Cut</attribute>
+	    <attribute name="action">win.cut</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Copy</attribute>
+	    <attribute name="action">win.copy</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Paste</attribute>
+	    <attribute name="action">win.paste</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Delete</attribute>
+	    <attribute name="action">win.delete</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Select All</attribute>
+	    <attribute name="action">win.select-all</attribute>
+	  </item>
+	</section>
+      </submenu>
+      <submenu>
+	<attribute name="label" translatable="yes">Search</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Search...</attribute>
+	    <attribute name="action">win.search</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Search Next</attribute>
+	    <attribute name="action">win.search-next</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Search Previous</attribute>
+	    <attribute name="action">win.search-prev</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Replace...</attribute>
+	    <attribute name="action">win.replace</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Jump</attribute>
+	    <attribute name="action">win.jump</attribute>
+	  </item>
+	</section>
+      </submenu>
+      <submenu>
+	<attribute name="label" translatable="yes">View</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Go Next Page</attribute>
+	    <attribute name="action">win.goto-next-page</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Go Previous Page</attribute>
+	    <attribute name="action">win.goto-prev-page</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Go Page...</attribute>
+	    <attribute name="action">win.goto-page</attribute>
+	  </item>
+	</section>
+      </submenu>
+      <submenu>
+	<attribute name="label" translatable="yes">Help</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">About...</attribute>
+	    <attribute name="action">win.info</attribute>
+	  </item>
+	</section>
+      </submenu>
+    </section>
+  </menu>
+</interface>

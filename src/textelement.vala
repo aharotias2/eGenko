@@ -1,0 +1,53 @@
+/*
+ * This file is part of GenkoYoshi.
+ *
+ *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright 2021 Takayuki Tanaka
+ */
+
+public class TextElement : Object {
+    public string? str { get; construct; }
+    public ConvType conv_type { get; construct; }
+    public uint32 unicode_codepoint { get; construct; }
+    public int size {
+        get {
+            return str.length;
+        }
+    }
+    public bool is_preedit { get; set; }
+    public bool has_hurigana { get; set; }
+    public int hurigana_span { get; set; }
+    public Gee.List<TextElement> hurigana { get; set; }
+    public bool is_bold { get; set; default = false; }
+    public bool is_dotted { get; set; default = false; }
+    public TextElement(string src) {
+        try {
+            uint32 codepoint = Utf8Utils.utf8_to_codepoint((char[]) src.data);
+            ConvType conv_type = VerticalFormMap.get_convtype(codepoint);
+            Object(
+                str: src,
+                is_preedit: false,
+                has_hurigana: false,
+                hurigana_span: 0,
+                hurigana: new Gee.ArrayList<TextElement>(),
+                unicode_codepoint: codepoint,
+                conv_type: conv_type
+            );
+        } catch (Utf8Utils.ParseError e) {
+            printerr("CRITICAL: %s\n", e.message);
+            Process.exit(127);
+        }
+    }
+}
