@@ -5,25 +5,45 @@ genkoyoshi
 GTK+3で、原稿用紙風のテキストエディタを作っていきます。
 
 まだまだ始めたばかりなので、不足している機能や、バグなど多いです。
-
 リリースするまではまるで使い物にならないと思ってください。
 
-![画像](doc/images/screenshot-1.png)
-
-(文章は、島崎藤村の「刺繍」、フォントは「Ｎちはやフォント＋」を使用しています)
+![画像](doc/images/screenshot-1.png)  
+文：「蕎麦の味と食い方問題」村井政善・著
+([ホームページ](https://www.aozora.gr.jp/cards/000312/card2036.html))  
+フォント：「うずらフォント」([ホームページ](http://azukifont.com/font/uzura.html))
 
 コンパイル・インストール・実行方法
 ----------------------------------------------------------------------------------------------------
 `meson`コマンドを使ってビルドします。
 
-依存関係は
+依存関係はArch Linuxだと
 
 * gcc
-* gtk+-3.0
-* gee-0.8
-* vala-0.54
-* meson
+* gtk3
+* libgee
+* vala
+* meson (>=0.58)
 * ninja
+* json-glib
+
+Fedora (35)だと
+
+* gtk3-devel
+* vala
+* meson
+* libgee-devel
+* libjson-glib-devel
+
+Ubuntu (20.04)だと
+
+* libgtk-3-dev
+* vala
+* meson
+* libgee-0.8-dev
+* libjson-glib-dev
+
+※しかしUbuntuではmesonのバージョンが古い(0.53)ため、現在ビルドできません。
+他の環境でコンパイルしてインストールした方が良さそうです。
 
 コンパイル・インストール方法
 
