@@ -431,7 +431,7 @@ public class TextModel : Object {
             // 複数行挿入する場合は一行ずつ処理をする。
             if (p1.vpos == 0) {
                 if (line.size > 0) {
-                    new_piece.last().add_all(line);
+                    new_piece.last().concat(line);
                 }
             } else if (p1.vpos >= line.size) {
                 new_piece.first().insert_all(0, line);
@@ -439,7 +439,7 @@ public class TextModel : Object {
                 var part1 = line;
                 var part2 = part1.cut_at(p1.vpos);
                 new_piece[0].insert_all(0, part1);
-                new_piece.last().add_all(part2);
+                new_piece.last().concat(part2);
             }
 
             data.remove_at(p1.hpos);
@@ -573,6 +573,8 @@ public class TextModel : Object {
         if (data[x].size == 0) {
             if (data.size == 1 && x == 0) {
                 return 0;
+            } else if (x == data.size - 1) {
+                return 0;
             } else {
                 data.remove_at(x);
                 return 0;
@@ -586,12 +588,12 @@ public class TextModel : Object {
 
         // x行目の行末が'\n'以外の場合はラップ処理を行う。
         var line = new SimpleList<TextElement>();
-        line.add_all(data[x]);
+        line.concat(data[x]);
         data.remove_at(x);
 
         // x行目に続く行を末尾が'\n'になるまで新しく作成したリストに追加し、一列にする。
         while (x < data.size && line.get_last().str != "\n") {
-            line.add_all(data[x]);
+            line.concat(data[x]);
             // 取り込んだ行は削除する。
             data.remove_at(x);
         }
@@ -755,11 +757,7 @@ public class TextModel : Object {
                 if (edit_mode == DIRECT_INPUT) {
                     p2.self_add_offset(1);
                 }
-                if (p2.vpos < line.size - 1) {
-                    line.slice_cut(p1.vpos, p2.vpos);
-                } else {
-                    line.cut_at(p1.vpos);
-                }
+                line.slice_cut(p1.vpos, p2.vpos);
             }
             //undo_list.put(DELETE, piece);
         } else {
@@ -786,7 +784,7 @@ public class TextModel : Object {
                 if (p4.vpos < line2.size) {
                     var part3 = line2;
                     var part4 = part3.cut_at(p4.vpos);
-                    part1.add_all(part4);
+                    part1.concat(part4);
                 }
             }
             // 選択範囲の開始と終了の間の行を削除する。
@@ -812,7 +810,8 @@ public class TextModel : Object {
     private Gee.List<SimpleList<TextElement>> construct_text(string src, EditMode arg_edit_mode = DIRECT_INPUT, WrapMode wrap_mode = NOWRAP,
             bool has_hurigana = false) {
         var result = new Gee.ArrayList<SimpleList<TextElement>>();
-        result.add(new SimpleList<TextElement>());
+        var line = new SimpleList<TextElement>();
+        result.add(line);
         if (src.length == 0) {
             return result;
         }
@@ -828,7 +827,6 @@ public class TextModel : Object {
                 offset++;
                 continue;
             }
-            var line = result.last();
             if (substr_length == 1 && atp == '[') {
                 // ふりがなを調べる。
                 string main_substr, hurigana_substr;
@@ -841,7 +839,7 @@ public class TextModel : Object {
                     elem.has_hurigana = true;
                     elem.hurigana_span = main_text[0].size;
                     elem.hurigana = hurigana_text[0];
-                    line.add_all(main_text[0]);
+                    line.concat(main_text[0]);
                     offset += match_length;
                     is_normal_text = false;
                 }
@@ -856,7 +854,8 @@ public class TextModel : Object {
             }
             // 必要に応じて、折り返し処理を行なう。
             if ((wrap_mode == WRAP && line.size == Y_LENGTH) || atp == '\n') {
-                result.add(new SimpleList<TextElement>());
+                line = new SimpleList<TextElement>();
+                result.add(line);
             }
         }
         return result;
@@ -909,8 +908,8 @@ public class TextModel : Object {
      * デバッグ用のメソッド。
      * 一行分のテキストの内容をデバッグ表示する。
      * 使わない時はコメントアウトする。
-     *
-    private void analyze_line(SimpleList<TextElement> line) {
+     */
+    public void analyze_line(SimpleList<TextElement> line) {
         StringBuilder sb = new StringBuilder();
         if (line.size == 0) {
             debug("[]");
@@ -925,21 +924,20 @@ public class TextModel : Object {
                     sb.append(", ");
                 }
             }
-            if (line.last().str == "\n") {
+            if (line.get_last().str == "\n") {
                 sb.append("\\n]");
             } else {
-                sb.append(line.last().str);
+                sb.append(line.get_last().str);
                 sb.append("]");
             }
             debug(sb.str);
         }
     }
     
-    private void analyze_all_lines(string message) {
+    public void analyze_all_lines(string message) {
         debug(message);
         foreach (var line in data) {
             analyze_line(line);
         }
     }
-    */
 }

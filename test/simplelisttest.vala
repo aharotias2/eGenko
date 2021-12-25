@@ -83,7 +83,7 @@ int main(string[] args) {
         {
             SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3);
             SimpleList<int> list2 = new SimpleList<int>.from_data(4, 5, 6);
-            list1.add_all(list2);
+            list1.concat(list2);
             assert(list1.size == 6);
             assert(list2.size == 0);
             assert(list1[0] == 1);
@@ -158,14 +158,14 @@ int main(string[] args) {
         {
             SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
             SimpleList<int> list2 = list1.cut_at(0);
-            assert(list1.size == 6);
-            assert(list2.size == 0);
-            assert(list1[0] == 1);
-            assert(list1[1] == 2);
-            assert(list1[2] == 3);
-            assert(list1[3] == 4);
-            assert(list1[4] == 5);
-            assert(list1[5] == 6);
+            assert(list1.size == 0);
+            assert(list2.size == 6);
+            assert(list2[0] == 1);
+            assert(list2[1] == 2);
+            assert(list2[2] == 3);
+            assert(list2[3] == 4);
+            assert(list2[4] == 5);
+            assert(list2[5] == 6);
         }
         break;
       case 14:
@@ -417,7 +417,8 @@ int main(string[] args) {
       case 32:
         {
             SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
-            int a = list1.remove_at(6);
+            list1.remove_at(6);
+            
         }
         break;
       case 33:

@@ -131,9 +131,11 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         set_title("原稿用紙");
         show_all();
         
-        context_edit_menu = new Gtk.Menu.from_model(application.get_menu_by_id("edit-menu"));
+        context_edit_menu = new Gtk.Menu.from_model(application.get_menu_by_id("edit-menu")) {
+            attach_widget = this
+        };
     }
-
+    
     private void init_action_map() {
         var open_action = new SimpleAction("open", null);
         open_action.activate.connect(open_file);

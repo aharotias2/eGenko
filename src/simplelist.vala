@@ -1,3 +1,22 @@
+/*
+ * This file is part of GenkoYoshi.
+ *
+ *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright 2021 Takayuki Tanaka
+ */
+
 public class SimpleList<T> : Object {
     private class Element<T> : Object {
         public T data;
@@ -59,21 +78,25 @@ public class SimpleList<T> : Object {
             } else {
                 e.next = new Element<T>() { data = va_data };
                 e.next.prev = e;
-                e = e.next;
             }
+            e = e.next;
         }
     }
 
     public SimpleList<T>? cut_at(int n) {
         assert(root != null);
-        if (n == 0) {
-            return null;
-        }
-        unowned Element<T>? e = get_nth_element(n - 1);
-        Element<T> next_first = e.next;
-        e.next = null;
         SimpleList<T> new_list = new SimpleList<T>();
-        new_list.root = next_first;
+        if (n == 0) {
+            new_list.root = root;
+            clear();
+        } else if (n < size) {
+            Element<T>? e = get_nth_element(n - 1);
+            Element<T> next_first = e.next;
+            e.next = null;
+            new_list = new SimpleList<T>();
+            new_list.root = next_first;
+            new_list.root.prev = null;
+        }
         return new_list;
     }
     
@@ -100,8 +123,10 @@ public class SimpleList<T> : Object {
         }
     }
     
-    public void add_all(SimpleList<T> list) {
-        if (size == 0) {
+    public void concat(SimpleList<T> list) {
+        if (list.is_empty()) {
+            return;
+        } else if (size == 0) {
             root = list.root;
         } else {
             Element<T> last = get_last_element();
@@ -116,15 +141,15 @@ public class SimpleList<T> : Object {
             if (index == 0) {
                 root = new Element<T>() { data = new_data };
             } else {
-                return;
+                assert(index > 0);
             }
         } else {
             if (index == 0) {
                 Element<T> e = new Element<T>() { data = new_data };
                 e.next = root;
-                e.next.prev = root;
+                e.next.prev = e;
                 root = e;
-            } else {
+            } else if (index < size) {
                 Element<T>? e = get_nth_element(index - 1);
                 Element<T> new_elem = new Element<T>() { data = new_data };
                 new_elem.next = e.next;
@@ -133,6 +158,8 @@ public class SimpleList<T> : Object {
                 }
                 e.next = new_elem;
                 new_elem.prev = e;
+            } else {
+                add(new_data);
             }
         }
     }
@@ -146,7 +173,8 @@ public class SimpleList<T> : Object {
             if (index == 0) {
                 new_elements.get_last_element().next = root;
                 root = new_elements.root;
-            } else {
+                new_elements.clear();
+            } else if (index < size) {
                 Element<T>? e1 = get_nth_element(index - 1);
                 if (e1.next == null) {
                     e1.next = new_elements.root;
@@ -160,9 +188,11 @@ public class SimpleList<T> : Object {
                     e1.next = new_elements.root;
                     e1.next.prev = e1;
                 }
+                new_elements.clear();
+            } else {
+                concat(new_elements);
             }
         }
-        new_elements.clear();
     }
     
     public T? remove_at(int index) {

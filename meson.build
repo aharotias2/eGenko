@@ -107,6 +107,10 @@ textmodeltests = executable(
   ]
 )
 
+test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_1'])
+test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_2'])
+test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_3'])
+test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_4'])
 test('TextModelTests.get_contents_1', textmodeltests, args: ['get_contents_1'])
 test('TextModelTests.get_contents_2', textmodeltests, args: ['get_contents_2'])
 test('TextModelTests.count_lines_1', textmodeltests, args: ['count_lines_1'])

@@ -4,6 +4,26 @@ int main(string[] argv) {
     }
     set_print_handler((text) => stdout.puts(text));
     switch (argv[1]) {
+      case "construct_text_1":
+        return test_construct_text(
+                "ああああああいいいいいい",
+                length: 12, lines: 1, visible_lines: 1);
+                
+      case "construct_text_2":
+        return test_construct_text(
+                "ああああああいいいいいいううううううええええええ",
+                length: 24, lines: 1, visible_lines: 2);
+                
+      case "construct_text_3":
+        return test_construct_text(
+                "ああああああいいいいいい\nううううううええええええ",
+                length: 25, lines: 2, visible_lines: 2);
+                
+      case "construct_text_4":
+        return test_construct_text(
+                "ああああああいいいいいい\nううううううええええええ\n",
+                length: 26, lines: 3, visible_lines: 3);
+                
       case "get_contents_1":
         return test_get_contents("おはようございます。", "おはようございます。");
 
@@ -172,8 +192,8 @@ int main(string[] argv) {
                 {1, 0},
                 1,
                 "\nあ\n\n\n",
-                4,
-                4);
+                5,
+                5);
 
       case "insert_newline_1":
         return test_insert_newline(
@@ -304,6 +324,33 @@ int main(string[] argv) {
     }
 }
 
+int test_construct_text(string src_text, ...) {
+    var model = new TextModel.from_string(src_text);
+    var l = va_list();
+    while (true) {
+        string? label = l.arg<string?>();
+        switch (label) {
+          case "length":
+            int expect_length = l.arg<int>();
+            print("length: expect = %d, actual = %d\n", expect_length, model.count_chars());
+            assert(model.count_chars() == expect_length);
+            break;
+          case "lines":
+            int expect_lines = l.arg<int>();
+            print("lines: expect = %d, actual = %d\n", expect_lines, model.count_lines());
+            assert(model.count_lines() == expect_lines);
+            break;
+          case "visible-lines":
+            int expect_visible_lines = l.arg<int>();
+            print("visible-lines: expect = %d, actual = %d\n", expect_visible_lines, model.count_visible_lines());
+            assert(model.count_visible_lines() == expect_visible_lines);
+            break;
+          default:
+            return 0;
+        }
+    }
+}
+
 int test_get_contents(string src_text, string expect) {
     var model = new TextModel.from_string(src_text);
     var result = model.get_contents();
@@ -409,6 +456,7 @@ int test_insert_newline(string orig, CellPosition insert_pos, int insert_num,
         model.insert_string("\n");
     }
     string result = model.get_contents();
+    model.analyze_all_lines("analyze_all_lines");
     print("result: %s\nexpect: %s\n", result, expect);
     assert(result == expect);
     print("expected_lines: %d, actual: %d\n", expect_lines, model.count_lines());
