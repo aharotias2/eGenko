@@ -29,9 +29,10 @@ public class TextElement : Object {
     public bool is_preedit { get; set; }
     public bool has_hurigana { get; set; }
     public int hurigana_span { get; set; }
-    public Gee.List<TextElement> hurigana { get; set; }
+    public SimpleList<TextElement> hurigana { get; set; }
     public bool is_bold { get; set; default = false; }
     public bool is_dotted { get; set; default = false; }
+
     public TextElement(string src) {
         try {
             uint32 codepoint = Utf8Utils.utf8_to_codepoint((char[]) src.data);
@@ -41,7 +42,7 @@ public class TextElement : Object {
                 is_preedit: false,
                 has_hurigana: false,
                 hurigana_span: 0,
-                hurigana: new Gee.ArrayList<TextElement>(),
+                hurigana: new SimpleList<TextElement>(),
                 unicode_codepoint: codepoint,
                 conv_type: conv_type
             );
@@ -49,5 +50,16 @@ public class TextElement : Object {
             printerr("CRITICAL: %s\n", e.message);
             Process.exit(127);
         }
+    }
+
+    public TextElement clone() {
+        TextElement e = new TextElement(this.str);
+        e.is_preedit = is_preedit;
+        e.has_hurigana = has_hurigana;
+        e.hurigana_span = hurigana_span;
+        e.hurigana = hurigana;
+        e.is_bold = is_bold;
+        e.is_dotted = is_dotted;
+        return e;
     }
 }

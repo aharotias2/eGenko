@@ -18,5 +18,6 @@
  */
 
 public errordomain AppError {
-    LOGICAL_ERROR
+    LOGICAL_ERROR,
+    INDEX_OUT_OF_BOUNDS
 }

@@ -39,7 +39,7 @@ public class TextModel : Object {
     
     // プライベートフィールド
         
-    private Gee.List<Gee.List<TextElement>> data;
+    private Gee.List<SimpleList<TextElement>> data;
     private CellPosition selection_start = { 0, 0 };
     private CellPosition selection_end = { 0, 0 };
     private CellPosition preedit_start = { -1, -1 };
@@ -84,7 +84,7 @@ public class TextModel : Object {
         int count = 1;
         foreach (var line in data) {
             if (line.size > 0) {
-                if (line.last().str == "\n") {
+                if (line.get_last().str == "\n") {
                     count++;
                 }
             }
@@ -284,8 +284,8 @@ public class TextModel : Object {
         data.clear();
         foreach (var line in new_text.split("\n")) {
             var new_line = construct_text(line, DIRECT_INPUT, WRAP);
-            new_line.last().add(new TextElement("\n"));
-            data.add_all(new_line);
+            new_line[0].add(new TextElement("\n"));
+            data.add(new_line[0]);
             Idle.add(set_contents_async.callback);
             yield;
         }
@@ -368,7 +368,7 @@ public class TextModel : Object {
         undo_list.add(new HistoryItem(INSERT, text, null, selection_start, selection_end));
     }
 
-    public void insert_text(Gee.List<Gee.List<TextElement>> new_piece) {
+    public void insert_text(Gee.List<SimpleList<TextElement>> new_piece) {
         // 選択範囲の二つの点のうち前にあるものをp1、後ろにあるものをp2とする
         CellPosition p1, p2;
         if (selection_start.comp_le(selection_end)) {
@@ -400,8 +400,7 @@ public class TextModel : Object {
             debug("insert a newline");
             // 改行を挿入する
             if (p1.vpos < line.size) {
-                var new_line = line.slice(p1.vpos, line.size);
-                line.remove_all(new_line);
+                var new_line = line.cut_at(p1.vpos);
                 line.add(new TextElement("\n"));
                 data.insert(p1.hpos + 1, new_line);
                 CellPosition new_pos = {p1.hpos + 1, 0};
@@ -418,15 +417,17 @@ public class TextModel : Object {
         } else if (new_piece.size == 1) {
             debug("insert a single line");
             // 挿入する文字列が一行の場合は単純に挿入して行折り返し処理をする。
+            int new_piece_size = new_piece[0].size;
             line.insert_all(p1.vpos, new_piece[0]);
             if (data[p1.hpos].size >= Y_LENGTH) {
                 wrap_line(p1.hpos);
             }
 
             // カーソルを挿入した文字列の末尾の位置に移動する。
-            selection_start = p1.add_offset(new_piece[0].size);
+            selection_start = p1.add_offset(new_piece_size);
         } else {
             debug("insert multiple lines");
+            int new_piece_last_size = new_piece.last().size;
             // 複数行挿入する場合は一行ずつ処理をする。
             if (p1.vpos == 0) {
                 if (line.size > 0) {
@@ -435,8 +436,8 @@ public class TextModel : Object {
             } else if (p1.vpos >= line.size) {
                 new_piece.first().insert_all(0, line);
             } else {
-                var part1 = line.slice(0, p1.vpos);
-                var part2 = line.slice(p1.vpos, line.size);
+                var part1 = line;
+                var part2 = part1.cut_at(p1.vpos);
                 new_piece[0].insert_all(0, part1);
                 new_piece.last().add_all(part2);
             }
@@ -452,7 +453,7 @@ public class TextModel : Object {
             // カーソルを挿入した文字列の末尾の位置に移動する。
             selection_start = {
                 p1.hpos + n_lines,
-                new_piece.last().size % Y_LENGTH
+                new_piece_last_size % Y_LENGTH
             };
         }
         
@@ -579,17 +580,17 @@ public class TextModel : Object {
         }
 
         // x行目の長さが20文字以内、かつ行末が'\n'の場合は何もしない。        
-        if (data[x].size < Y_LENGTH && data[x].last().str == "\n") {
+        if (data[x].size < Y_LENGTH && data[x].get_last().str == "\n") {
             return 0;
         }
 
         // x行目の行末が'\n'以外の場合はラップ処理を行う。
-        var line = new Gee.ArrayList<TextElement>();
+        var line = new SimpleList<TextElement>();
         line.add_all(data[x]);
         data.remove_at(x);
 
         // x行目に続く行を末尾が'\n'になるまで新しく作成したリストに追加し、一列にする。
-        while (x < data.size && line.last().str != "\n") {
+        while (x < data.size && line.get_last().str != "\n") {
             line.add_all(data[x]);
             // 取り込んだ行は削除する。
             data.remove_at(x);
@@ -600,19 +601,19 @@ public class TextModel : Object {
         // 新しく作成したリストが20文字を超える場合
         if (line.size >= Y_LENGTH) {
             // 20文字で区切って挿入していく
-            var part1 = line.slice(0, Y_LENGTH);
+            var part1 = line;
+            var part2 = part1.cut_at(Y_LENGTH);
             data.insert(x, part1);
             int i = 1;
             
             // 以降20文字ずつに区切って挿入を繰り返す。
-            var part2 = line.slice(Y_LENGTH, line.size);
             while (part2.size >= Y_LENGTH) {
-                part1 = part2.slice(0, Y_LENGTH);
+                part1 = part2;
+                part2 = part1.cut_at(Y_LENGTH);
                 data.insert(x + i, part1);
                 i++;
-                part2 = part2.slice(Y_LENGTH, part2.size);
             }
-            if (part2.size == 0) {
+            if (part2.is_empty()) {
                 result = i;
             } else {
                 data.insert(x + i, part2);
@@ -754,14 +755,11 @@ public class TextModel : Object {
                 if (edit_mode == DIRECT_INPUT) {
                     p2.self_add_offset(1);
                 }
-                if (p2.vpos > line.size) {
-                    p2.vpos = line.size;
+                if (p2.vpos < line.size - 1) {
+                    line.slice_cut(p1.vpos, p2.vpos);
+                } else {
+                    line.cut_at(p1.vpos);
                 }
-                var part1 = line.slice(0, p1.vpos);
-                var part2 = data[p2.hpos].slice(p2.vpos, data[p2.hpos].size);
-                part1.add_all(part2);
-                data.remove(line);
-                data.insert(p1.hpos, part1);
             }
             //undo_list.put(DELETE, piece);
         } else {
@@ -777,7 +775,8 @@ public class TextModel : Object {
                 }
             }
             // 選択範囲の前の部分に選択範囲の後ろの部分を追加する。
-            var part1 = line1.slice(0, p1.vpos);
+            var part1 = line1;
+            var part2 = part1.cut_at(p1.vpos);
             var p4 = p2;
             if (edit_mode == DIRECT_INPUT) {
                 p4 = p3;
@@ -785,8 +784,9 @@ public class TextModel : Object {
             if (p4.hpos < data.size) {
                 var line2 = data[p4.hpos];
                 if (p4.vpos < line2.size) {
-                    var part2 = line2.slice(p4.vpos, line2.size);
-                    part1.add_all(part2);
+                    var part3 = line2;
+                    var part4 = part3.cut_at(p4.vpos);
+                    part1.add_all(part4);
                 }
             }
             // 選択範囲の開始と終了の間の行を削除する。
@@ -809,10 +809,10 @@ public class TextModel : Object {
      * 元となる文字列をUTF-8の方式で一文字ずつ分解してTextElementのリストを作る。
      * 改行を含む場合は複数行を作成する。
      */
-    private Gee.List<Gee.List<TextElement>> construct_text(string src, EditMode arg_edit_mode = DIRECT_INPUT, WrapMode wrap_mode = NOWRAP,
+    private Gee.List<SimpleList<TextElement>> construct_text(string src, EditMode arg_edit_mode = DIRECT_INPUT, WrapMode wrap_mode = NOWRAP,
             bool has_hurigana = false) {
-        var result = new Gee.ArrayList<Gee.List<TextElement>>();
-        result.add(new Gee.ArrayList<TextElement>());
+        var result = new Gee.ArrayList<SimpleList<TextElement>>();
+        result.add(new SimpleList<TextElement>());
         if (src.length == 0) {
             return result;
         }
@@ -856,13 +856,13 @@ public class TextModel : Object {
             }
             // 必要に応じて、折り返し処理を行なう。
             if ((wrap_mode == WRAP && line.size == Y_LENGTH) || atp == '\n') {
-                result.add(new Gee.ArrayList<TextElement>());
+                result.add(new SimpleList<TextElement>());
             }
         }
         return result;
     }
     
-    private bool text_is_newline(Gee.List<Gee.List<TextElement>>? text) {
+    private bool text_is_newline(Gee.List<SimpleList<TextElement>>? text) {
         if (text != null && text.size == 2 && text[0].size == 1 && text[0][0].str == "\n" && text[1].size == 0) {
             return true;
         } else {
@@ -876,53 +876,33 @@ public class TextModel : Object {
      * カーソル位置が最終行より後ろにある場合は改行で埋める。
      */
     private void pad_space(int hpos, int vpos) {
-        debug("a");
         if (data.size <= hpos) {
-            debug("b");
             var last_line = data.last();
-            debug("c");
-            if (last_line.size == 0 || (last_line.size < (Y_LENGTH - 1) && last_line.last().str != "\n")) {
-                debug("d");
+            if (last_line.size == 0 || (last_line.size < (Y_LENGTH - 1) && last_line.get_last().str != "\n")) {
                 last_line.add(new TextElement("\n"));
-                debug("e");
             }
             while (data.size <= hpos) {
-                debug("f");
-                var new_line = new Gee.ArrayList<TextElement>();
-                debug("g");
+                var new_line = new SimpleList<TextElement>();
                 if (data.size < hpos) {
-                    debug("h");
                     new_line.add(new TextElement("\n"));
-                    debug("i");
                 }
-                debug("j");
                 data.add(new_line);
-                debug("k");
             }
         }
-        debug("l");
         var line = data[hpos];
-        if (line.size > 0 && line.last().str == "\n") {
-            debug("l");
+        if (line.size > 0 && line.get_last().str == "\n") {
             while (line.size <= vpos) {
                 // 全角空白を追加する。
-                debug("m");
                 var space = new TextElement("　");
-                debug("n");
                 line.insert(line.size - 1, space);
             }
         } else {
             while (line.size < vpos) {
-                debug("o");
                 // 全角空白を追加する。
                 var space = new TextElement("　");
-                debug("p");
-                debug("line.size = %d", line.size);
-                debug("q");
                 line.add(space);
             }
         }
-        debug("r");
     }
     
     /**
@@ -930,7 +910,7 @@ public class TextModel : Object {
      * 一行分のテキストの内容をデバッグ表示する。
      * 使わない時はコメントアウトする。
      *
-    private void analyze_line(Gee.List<TextElement> line) {
+    private void analyze_line(SimpleList<TextElement> line) {
         StringBuilder sb = new StringBuilder();
         if (line.size == 0) {
             debug("[]");

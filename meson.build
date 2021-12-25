@@ -61,6 +61,7 @@ executable(
     'src/convtype.vala',
     'src/actiontype.vala',
     'src/historyitem.vala',
+    'src/simplelist.vala',
     resources
   ],
   dependencies: [
@@ -96,6 +97,7 @@ textmodeltests = executable(
     'src/convtype.vala',
     'src/actiontype.vala',
     'src/historyitem.vala',
+    'src/simplelist.vala',
     resources
   ],
   dependencies: [
@@ -189,4 +191,22 @@ utf8utilstests = executable(
 
 foreach i : range(1, 14)
   test('Utf8UtilsTest.@0@'.format(i), utf8utilstests, args: [i.to_string()])
+endforeach
+
+## SimpleListのテスト
+
+simplelisttests = executable(
+  'SimpleListTests',
+  [
+    'test/simplelisttest.vala',
+    'src/simplelist.vala'
+  ],
+  dependencies: [
+    dependency('glib-2.0'),
+    dependency('gio-2.0')
+  ]
+)
+
+foreach i : range(1, 27)
+  test('SimpleListTest.@0@'.format(i), simplelisttests, args: [i.to_string()])
 endforeach
