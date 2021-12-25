@@ -190,6 +190,10 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         var prev_page_action = new SimpleAction("prev-page", null);
         prev_page_action.activate.connect(() => genkoyoshi.prev_page());
         add_action(prev_page_action);
+        
+        choose_font_action = new SimpleAction("choose-font", null);
+        choose_font_action.activate.connect(() => choose_font());
+        add_action(choose_font_action);
     }
     
     /**

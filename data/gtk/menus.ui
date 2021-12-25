@@ -71,6 +71,12 @@
     </section>
     <section>
       <item>
+	<attribute name="label" translatable="yes">Choose Font...</attribute>
+	<attribute name="action">win.choose-font</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
 	<attribute name="label" translatable="yes">About...</attribute>
 	<attribute name="action">win.show_info</attribute>
       </item>
