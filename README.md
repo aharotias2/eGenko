@@ -38,13 +38,13 @@ Ubuntu (20.04)だと
 
 * libgtk-3-dev
 * vala
-* meson
+* meson (pipでインストールする)
+  
+      $ sudo apt install python3-pip
+      $ pip3 install --user meson
+  
 * libgee-0.8-dev
 * libjson-glib-dev
-
-※しかしUbuntuではmesonのバージョンが古い(0.53)ため、現在ビルドできません。
-(range関数を使っているところをコメントアウトすれば可能か)
-他の環境でコンパイルしてインストールした方が良さそうです。
 
 コンパイル・インストール方法
 
