@@ -418,7 +418,6 @@ int main(string[] args) {
         {
             SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
             list1.remove_at(6);
-            
         }
         break;
       case 33:
@@ -427,6 +426,232 @@ int main(string[] args) {
             int a = list1.remove_at(0);
             assert(a == 1);
             assert(list1.size == 0);
+        }
+        break;
+      case 34:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.sublist(0, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 1);
+            assert(list2[1] == 2);
+            assert(list2[2] == 3);
+        }
+        break;
+      case 35:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.sublist(1, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 2);
+            assert(list2[1] == 3);
+            assert(list2[2] == 4);
+        }
+        break;
+      case 36:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.sublist(2, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 3);
+            assert(list2[1] == 4);
+            assert(list2[2] == 5);
+        }
+        break;
+      case 37:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.sublist(3, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 4);
+            assert(list2[1] == 5);
+            assert(list2[2] == 6);
+        }
+        break;
+      case 38:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.sublist(4, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 2);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 5);
+            assert(list2[1] == 6);
+        }
+        break;
+      case 39:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.sublist(5, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 1);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 6);
+        }
+        break;
+      case 40:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int>? list2 = list1.sublist(6, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 0);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+        }
+        break;
+      case 41:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.slice_copy(0, 3);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 1);
+            assert(list2[1] == 2);
+            assert(list2[2] == 3);
+        }
+        break;
+      case 42:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.slice_copy(1, 4);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 2);
+            assert(list2[1] == 3);
+            assert(list2[2] == 4);
+        }
+        break;
+      case 43:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.slice_copy(2, 5);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 3);
+            assert(list2[1] == 4);
+            assert(list2[2] == 5);
+        }
+        break;
+      case 44:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.slice_copy(3, 6);
+            assert(list1.size == 6);
+            assert(list2.size == 3);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 4);
+            assert(list2[1] == 5);
+            assert(list2[2] == 6);
+        }
+        break;
+      case 45:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.slice_copy(4, 7);
+            assert(list1.size == 6);
+            assert(list2.size == 2);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 5);
+            assert(list2[1] == 6);
+        }
+        break;
+      case 46:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int> list2 = list1.slice_copy(5, 8);
+            assert(list1.size == 6);
+            assert(list2.size == 1);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
+            assert(list2[0] == 6);
+        }
+        break;
+      case 47:
+        {
+            SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
+            SimpleList<int>? list2 = list1.slice_copy(6, 9);
+            assert(list1.size == 6);
+            assert(list2.size == 0);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
         }
         break;
       default:

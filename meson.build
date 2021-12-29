@@ -22,6 +22,15 @@ resources = gnome.compile_resources(
   source_dir: 'data'
 )
 
+i18n.merge_file(
+    input: join_paths('data', 'genkoyoshi.desktop.in'),
+    output: meson.project_name() + '.desktop',
+    po_dir: join_paths(meson.source_root(), 'po', 'extra'),
+    type: 'desktop',
+    install: true,
+    install_dir: join_paths(get_option('datadir'), 'applications')
+)
+
 subdir('po')
 
 config_h = configuration_data()
@@ -61,6 +70,7 @@ executable(
     'src/convtype.vala',
     'src/actiontype.vala',
     'src/historyitem.vala',
+    'src/history.vala',
     'src/simplelist.vala',
     resources
   ],
@@ -97,6 +107,7 @@ textmodeltests = executable(
     'src/convtype.vala',
     'src/actiontype.vala',
     'src/historyitem.vala',
+    'src/history.vala',
     'src/simplelist.vala',
     resources
   ],
@@ -108,9 +119,9 @@ textmodeltests = executable(
 )
 
 test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_1'])
-test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_2'])
-test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_3'])
-test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_4'])
+test('TextModelTests.construct_text_2', textmodeltests, args: ['construct_text_2'])
+test('TextModelTests.construct_text_3', textmodeltests, args: ['construct_text_3'])
+test('TextModelTests.construct_text_4', textmodeltests, args: ['construct_text_4'])
 test('TextModelTests.get_contents_1', textmodeltests, args: ['get_contents_1'])
 test('TextModelTests.get_contents_2', textmodeltests, args: ['get_contents_2'])
 test('TextModelTests.count_lines_1', textmodeltests, args: ['count_lines_1'])
@@ -211,6 +222,6 @@ simplelisttests = executable(
   ]
 )
 
-foreach i : range(1, 27)
+foreach i : range(1, 48)
   test('SimpleListTest.@0@'.format(i), simplelisttests, args: [i.to_string()])
 endforeach

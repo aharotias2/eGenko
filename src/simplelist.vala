@@ -23,17 +23,17 @@ public class SimpleList<T> : Object {
         public Element<T>? next;
         public unowned Element<T>? prev;
     }
-    
+
     private Element<T>? root;
-    
+
     public void clear() {
         root = null;
     }
-    
+
     public new T? @get(int n) {
         return get_nth_element(n).data;
     }
-    
+
     private unowned Element<T> get_nth_element(int n) {
         assert(root != null);
         if (n == 0) {
@@ -46,7 +46,7 @@ public class SimpleList<T> : Object {
         }
         return e;
     }
-    
+
     public int size {
         get {
             if (root == null) {
@@ -62,11 +62,11 @@ public class SimpleList<T> : Object {
             }
         }
     }
-    
+
     public bool is_empty() {
         return size == 0;
     }
-    
+
     public SimpleList.from_data(T new_data, ...) {
         root = new Element<T>() { data = new_data };
         var l = va_list();
@@ -99,11 +99,11 @@ public class SimpleList<T> : Object {
         }
         return new_list;
     }
-    
+
     public T get_last() {
         return get_last_element().data;
     }
-    
+
     private unowned Element<T> get_last_element() {
         assert(root != null);
         unowned Element<T> e = root;
@@ -112,7 +112,7 @@ public class SimpleList<T> : Object {
         }
         return e;
     }
-    
+
     public void add(T new_element) {
         if (root == null) {
             root = new Element<T>() { data = new_element };
@@ -122,7 +122,7 @@ public class SimpleList<T> : Object {
             e.next.prev = e;
         }
     }
-    
+
     public void concat(SimpleList<T> list) {
         if (list.is_empty()) {
             return;
@@ -135,7 +135,7 @@ public class SimpleList<T> : Object {
         }
         list.clear();
     }
-    
+
     public void insert(int index, T new_data) {
         if (root == null) {
             if (index == 0) {
@@ -163,12 +163,13 @@ public class SimpleList<T> : Object {
             }
         }
     }
-    
+
     public void insert_all(int index, SimpleList<T> new_elements) {
         if (new_elements.is_empty()) {
             return;
         } else if (root == null && index == 0) {
             root = new_elements.root;
+            new_elements.clear();
         } else {
             if (index == 0) {
                 new_elements.get_last_element().next = root;
@@ -194,7 +195,7 @@ public class SimpleList<T> : Object {
             }
         }
     }
-    
+
     public T? remove_at(int index) {
         assert(root != null);
         if (index == 0) {
@@ -218,7 +219,7 @@ public class SimpleList<T> : Object {
             return e2.data;
         }
     }
-    
+
     public SimpleList<T>? remove(int start_index, int num_to_remove) {
         assert(start_index >= 0);
         SimpleList<T> list = new SimpleList<T>();
@@ -253,8 +254,43 @@ public class SimpleList<T> : Object {
         }
         return list;
     }
-    
+
     public SimpleList<T>? slice_cut(int start_index, int end_index) {
         return remove(start_index, end_index - start_index);
+    }
+
+    public SimpleList<T>? copy_all() {
+        return sublist(0, size);
+    }
+
+    public SimpleList<T>? sublist(int start_index, int size) {
+        int end_index = start_index + size;
+        return slice_copy(start_index, end_index);
+    }
+
+    public SimpleList<T> slice_copy(int start_index, int end_index) {
+        int size_value = size;
+        return_if_fail(start_index <= end_index);
+        return_if_fail(start_index < size_value);
+        SimpleList<T> list = new SimpleList<T>();
+        if (end_index >= size_value) {
+            end_index = size_value;
+        }
+        if (start_index == end_index) {
+            return list;
+        }
+        list.root = new Element<T>();
+        unowned Element<T> src_iter = get_nth_element(start_index);
+        unowned Element<T> dest_iter = list.root;
+        for (int i = start_index; i < end_index; i++) {
+            dest_iter.next = new Element<T>();
+            dest_iter.next.data = src_iter.data;
+            dest_iter.next.prev = dest_iter;
+            dest_iter = dest_iter.next;
+            src_iter = src_iter.next;
+        }
+        list.root = list.root.next;
+        list.root.prev = null;
+        return list;
     }
 }

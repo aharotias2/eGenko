@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Genkoyoshi
+GenericName=Vertical Text Editor
+Commenct=A text editor that looks like manuscript paper (genkoyoshi) and allows you to edit vertical text. It is mainly intended for Japanese editing.
+MimeType=text/plain;
+Exec=com.github.aharotias2.genkoyoshi %F
+Icon=com.github.aharotias2.genkoyoshi
+Type=Application
+Terminal=false
+Categories=Accessories;
+Keywords=Text;Japanese;Editor;Vertical;
+

@@ -1,2 +1,5 @@
 src/main.vala
+src/appwindow.vala
 data/gtk/menus.ui
+data/genkoyoshi.appdata.xml.in
+data/genkoyoshi.desktop.in

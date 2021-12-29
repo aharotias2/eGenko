@@ -19,5 +19,7 @@
 
 public enum ActionType {
     INSERT,
-    DELETE
+    APPEND_LINE,
+    DELETE,
+    REMOVE_LINE
 }

@@ -18,19 +18,16 @@
  */
 
 public class HistoryItem : Object {
-    public Gee.List<SimpleList<TextElement>>? inserted_text { get; private set; }
-    public Gee.List<SimpleList<TextElement>>? deleted_text { get; private set; }
+    public ActionType action_type { get; private set; }
     public CellPosition selection_start { get; private set; }
     public CellPosition selection_end { get; private set; }
-    public ActionType action_type { get; private set; }
-    public HistoryItem(ActionType action_type, Gee.List<SimpleList<TextElement>>? inserted_text,
-            Gee.List<SimpleList<TextElement>>? deleted_text,
-            CellPosition selection_start, CellPosition selection_end) {
+    public Gee.List<SimpleList<TextElement>>? text { get; private set; }
+    public HistoryItem(ActionType action_type, CellPosition selection_start, CellPosition selection_end,
+            Gee.List<SimpleList<TextElement>>? text) {
         this.action_type = action_type;
-        this.inserted_text = inserted_text;
-        this.deleted_text = deleted_text;
         this.selection_start = selection_start;
         this.selection_end = selection_end;
+        this.text = text;
     }
 }
 

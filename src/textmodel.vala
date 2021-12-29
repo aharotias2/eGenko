@@ -33,9 +33,9 @@ public class TextModel : Object {
 
     public Availability hurigana_mode { get; set; default = ENABLED; }
     
-    public bool can_undo { get { return undo_list.size > 0; } }
+    public bool can_undo { get { return undo_list.has_history(); } }
     
-    public bool can_redo { get { return redo_list.size > 0; } }
+    public bool can_redo { get { return redo_list.has_history(); } }
     
     // プライベートフィールド
         
@@ -44,8 +44,8 @@ public class TextModel : Object {
     private CellPosition selection_end = { 0, 0 };
     private CellPosition preedit_start = { -1, -1 };
     private CellPosition preedit_end = { -1, -1 };
-    private Gee.Deque<HistoryItem> undo_list;
-    private Gee.Deque<HistoryItem> redo_list;
+    private History undo_list;
+    private History redo_list;
     
     // パブリックメソッド
     
@@ -54,8 +54,8 @@ public class TextModel : Object {
      * 空のテキストを作成して保持する。
      */
     public TextModel() {
-        undo_list = new Gee.ArrayQueue<HistoryItem>();
-        redo_list = new Gee.ArrayQueue<HistoryItem>();
+        undo_list = new History();
+        redo_list = new History();
         data = construct_text("", DIRECT_INPUT, NOWRAP);
     }
 
@@ -64,10 +64,7 @@ public class TextModel : Object {
      * 引数の文字列からテキストを作成して保持する。
      */
     public TextModel.from_string(string src) {
-        data = construct_text(src, DIRECT_INPUT, NOWRAP);
-        for (int i = data.size - 1; i >= 0; i--) {
-            wrap_line(i);
-        }
+        set_contents(src);
     }
 
     /**
@@ -282,10 +279,13 @@ public class TextModel : Object {
     
     public async void set_contents_async(string new_text) {
         data.clear();
-        foreach (var line in new_text.split("\n")) {
-            var new_line = construct_text(line, DIRECT_INPUT, WRAP);
-            new_line[0].add(new TextElement("\n"));
-            data.add(new_line[0]);
+        string[] lines = new_text.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            var text_list = construct_text(lines[i], DIRECT_INPUT, WRAP, true);
+            if (i < lines.length - 1) {
+                text_list.last().add(new TextElement("\n"));
+            }
+            data.add_all(text_list);
             Idle.add(set_contents_async.callback);
             yield;
         }
@@ -353,6 +353,7 @@ public class TextModel : Object {
                 selection_end.hpos, selection_end.vpos);
 
         var new_text = construct_text(src, DIRECT_INPUT, NOWRAP);
+        undo_list.new_action();
         insert_text(new_text);
         
         edit_mode = tmp;
@@ -365,7 +366,7 @@ public class TextModel : Object {
         debug("is newline");
         var text = construct_text("\n", DIRECT_INPUT, NOWRAP);
         insert_text(text);
-        undo_list.add(new HistoryItem(INSERT, text, null, selection_start, selection_end));
+        undo_list.push_action(INSERT, selection_start, selection_end, text);
     }
 
     public void insert_text(Gee.List<SimpleList<TextElement>> new_piece) {
@@ -642,51 +643,12 @@ public class TextModel : Object {
      * アンドゥ処理を行う。
      */
     public void undo_history() {
-        if (undo_list.size == 0) {
-            return;
-        }
-        var hist_action = undo_list.poll_head();
-        switch (hist_action.action_type) {
-          case INSERT:
-            // 選択範囲のテキストを削除→新たにテキストを挿入、という流れなので、
-            // 挿入したテキストを削除→削除したテキストを挿入、を行う。
-            delete_between(hist_action.selection_start, selection_end.subtract_offset(1));
-            selection_start = hist_action.selection_start;
-            selection_end = selection_start;
-            insert_text(hist_action.deleted_text);
-            break;
-          case DELETE:
-            // 選択範囲のテキストを削除しただけなので、
-            // 削除したテキストの挿入を行う。
-            selection_start = hist_action.selection_start;
-            selection_end = selection_start;
-            insert_text(hist_action.deleted_text);
-            break;
-        }
-        redo_list.offer_head(hist_action);
     }
     
     /**
      * リドゥ処理を行う。
      */
     public void redo_history() {
-        if (redo_list.size == 0) {
-            return;
-        }
-        var hist_action = redo_list.poll_head();
-        switch (hist_action.action_type) {
-          case INSERT:
-            selection_start = hist_action.selection_start;
-            selection_end = hist_action.selection_end;
-            insert_text(hist_action.inserted_text);
-            break;
-          case DELETE:
-            selection_start = hist_action.selection_start;
-            selection_end = hist_action.selection_end;
-            delete_between(selection_start, selection_end);
-            break;
-        }
-        undo_list.offer_head(hist_action);
     }
 
     /**

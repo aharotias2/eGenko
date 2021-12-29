@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.aharotias2.genkoyoshi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-26 00:03+0900\n"
+"POT-Creation-Date: 2021-12-28 21:05+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,106 +17,165 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/gtk/menus.ui:8 data/gtk/menus.ui:92
-msgid "Open File..."
+#: src/appwindow.vala:88
+msgid "Next"
 msgstr ""
 
-#: data/gtk/menus.ui:13 data/gtk/menus.ui:96
+#: src/appwindow.vala:92
+msgid "Previous"
+msgstr ""
+
+#: src/appwindow.vala:240
+msgid "Open file"
+msgstr ""
+
+#: src/appwindow.vala:240 src/appwindow.vala:281
+msgid "Cancel"
+msgstr ""
+
+#: src/appwindow.vala:240
+msgid "Open"
+msgstr ""
+
+#: src/appwindow.vala:267
+msgid "Choose Font"
+msgstr ""
+
+#: src/appwindow.vala:280 src/appwindow.vala:281 data/gtk/menus.ui:13
+#: data/gtk/menus.ui:102
 msgid "Save"
 msgstr ""
 
-#: data/gtk/menus.ui:18 data/gtk/menus.ui:101
+#: data/gtk/menus.ui:8 data/gtk/menus.ui:98
+msgid "Open File..."
+msgstr ""
+
+#: data/gtk/menus.ui:18 data/gtk/menus.ui:107
 msgid "Save As..."
 msgstr ""
 
-#: data/gtk/menus.ui:25 data/gtk/menus.ui:114
+#: data/gtk/menus.ui:25 data/gtk/menus.ui:120
 msgid "Edit"
 msgstr ""
 
-#: data/gtk/menus.ui:28 data/gtk/menus.ui:117
+#: data/gtk/menus.ui:28 data/gtk/menus.ui:123
 msgid "Undo"
 msgstr ""
 
-#: data/gtk/menus.ui:32 data/gtk/menus.ui:121
+#: data/gtk/menus.ui:32 data/gtk/menus.ui:127
 msgid "Redo"
 msgstr ""
 
-#: data/gtk/menus.ui:38 data/gtk/menus.ui:127
+#: data/gtk/menus.ui:38 data/gtk/menus.ui:133
 msgid "Cut"
 msgstr ""
 
-#: data/gtk/menus.ui:42 data/gtk/menus.ui:131
+#: data/gtk/menus.ui:42 data/gtk/menus.ui:137
 msgid "Copy"
 msgstr ""
 
-#: data/gtk/menus.ui:46 data/gtk/menus.ui:135
+#: data/gtk/menus.ui:46 data/gtk/menus.ui:141
 msgid "Paste"
 msgstr ""
 
-#: data/gtk/menus.ui:50 data/gtk/menus.ui:139
+#: data/gtk/menus.ui:50 data/gtk/menus.ui:145
 msgid "Delete"
 msgstr ""
 
-#: data/gtk/menus.ui:56 data/gtk/menus.ui:143
+#: data/gtk/menus.ui:56 data/gtk/menus.ui:149
 msgid "Select All"
 msgstr ""
 
-#: data/gtk/menus.ui:64 data/gtk/menus.ui:152
+#: data/gtk/menus.ui:64 data/gtk/menus.ui:158
 msgid "Search..."
 msgstr ""
 
-#: data/gtk/menus.ui:68 data/gtk/menus.ui:164
+#: data/gtk/menus.ui:68 data/gtk/menus.ui:170
 msgid "Replace..."
 msgstr ""
 
-#: data/gtk/menus.ui:74 data/gtk/menus.ui:194
+#: data/gtk/menus.ui:74
+msgid "Choose Font..."
+msgstr ""
+
+#: data/gtk/menus.ui:80 data/gtk/menus.ui:200
 msgid "About..."
 msgstr ""
 
-#: data/gtk/menus.ui:85
+#: data/gtk/menus.ui:91
 msgid "File"
 msgstr ""
 
-#: data/gtk/menus.ui:88
+#: data/gtk/menus.ui:94
 msgid "New"
 msgstr ""
 
-#: data/gtk/menus.ui:108
+#: data/gtk/menus.ui:114
 msgid "Quit"
 msgstr ""
 
-#: data/gtk/menus.ui:149
+#: data/gtk/menus.ui:155
 msgid "Search"
 msgstr ""
 
-#: data/gtk/menus.ui:156
+#: data/gtk/menus.ui:162
 msgid "Search Next"
 msgstr ""
 
-#: data/gtk/menus.ui:160
+#: data/gtk/menus.ui:166
 msgid "Search Previous"
 msgstr ""
 
-#: data/gtk/menus.ui:168
+#: data/gtk/menus.ui:174
 msgid "Jump"
 msgstr ""
 
-#: data/gtk/menus.ui:174
+#: data/gtk/menus.ui:180
 msgid "View"
 msgstr ""
 
-#: data/gtk/menus.ui:177
+#: data/gtk/menus.ui:183
 msgid "Go Next Page"
 msgstr ""
 
-#: data/gtk/menus.ui:181
+#: data/gtk/menus.ui:187
 msgid "Go Previous Page"
 msgstr ""
 
-#: data/gtk/menus.ui:185
+#: data/gtk/menus.ui:191
 msgid "Go Page..."
 msgstr ""
 
-#: data/gtk/menus.ui:191
+#: data/gtk/menus.ui:197
 msgid "Help"
+msgstr ""
+
+#: data/genkoyoshi.appdata.xml.in:8 data/genkoyoshi.desktop.in:3
+msgid "Genkoyoshi"
+msgstr ""
+
+#: data/genkoyoshi.appdata.xml.in:9
+msgid "A text editor that allows you to edit vertical text."
+msgstr ""
+
+#: data/genkoyoshi.appdata.xml.in:11
+msgid ""
+"A text editor that looks like manuscript paper (genkoyoshi) and allows you "
+"to edit vertical text. It is mainly intended for Japanese editing."
+msgstr ""
+
+#: data/genkoyoshi.appdata.xml.in:54
+msgid "Initial release."
+msgstr ""
+
+#: data/genkoyoshi.appdata.xml.in:60
+msgid "Tanaka Takayuki"
+msgstr ""
+
+#: data/genkoyoshi.desktop.in:4
+msgid "Vertical Text Editor"
+msgstr ""
+
+#: data/genkoyoshi.desktop.in:12
+msgid "Text;Japanese;Editor;Vertical;"
 msgstr ""

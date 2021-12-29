@@ -3,60 +3,68 @@ int main(string[] argv) {
         return 1;
     }
     set_print_handler((text) => stdout.puts(text));
-    switch (argv[1]) {
+    set_printerr_handler((text) => stdout.puts(text));
+    var main_loop = new MainLoop();
+    int result_code = 0;
+    select_test.begin(argv[1], (obj, res) => {
+        result_code = select_test.end(res);
+        main_loop.quit();
+    });
+    main_loop.run();
+    return 0;
+}
+
+async int select_test(string test_name) {
+    switch (test_name) {
       case "construct_text_1":
-        return test_construct_text(
-                "ああああああいいいいいい",
-                length: 12, lines: 1, visible_lines: 1);
+        return yield test_construct_text(
+                "ああああああいいいいいい", 12, 1, 1);
                 
       case "construct_text_2":
-        return test_construct_text(
-                "ああああああいいいいいいううううううええええええ",
-                length: 24, lines: 1, visible_lines: 2);
+        return yield test_construct_text(
+                "ああああああいいいいいいううううううええええええ", 24, 1, 2);
                 
       case "construct_text_3":
-        return test_construct_text(
-                "ああああああいいいいいい\nううううううええええええ",
-                length: 25, lines: 2, visible_lines: 2);
+        return yield test_construct_text(
+                "ああああああいいいいいい\nううううううええええええ", 25, 2, 2);
                 
       case "construct_text_4":
-        return test_construct_text(
-                "ああああああいいいいいい\nううううううええええええ\n",
-                length: 26, lines: 3, visible_lines: 3);
+        return yield test_construct_text(
+                "ああああああいいいいいい\nううううううええええええ\n", 26, 3, 3);
                 
       case "get_contents_1":
-        return test_get_contents("おはようございます。", "おはようございます。");
+        return yield test_get_contents("おはようございます。", "おはようございます。");
 
       case "get_contents_2":
-        return test_get_contents(
+        return yield test_get_contents(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかかかかかかかかか",
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかかかかかかかかか");
         
       case "count_lines_1":
-        return test_count_lines("おはようございます。", 1);
+        return yield test_count_lines("おはようございます。", 1);
         
       case "count_lines_2":
-        return test_count_lines(
+        return yield test_count_lines(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかかかかかかかかか",
                 2);
         
       case "count_visible_lines_1":
-        return test_count_visible_lines("おはようございます。", 1);
+        return yield test_count_visible_lines("おはようございます。", 1);
         
       case "count_visible_lines_2":
-        return test_count_visible_lines(
+        return yield test_count_visible_lines(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 4);
       
       case "insert_string_1":
-        return test_insert_string("おはようございます。", {0, 4}, "、", "おはよう、ございます。", 1, 1);
+        return yield test_insert_string("おはようございます。", {0, 4}, "、", "おはよう、ございます。", 1, 1);
 
       case "insert_string_2":
-        return test_insert_string(
+        return yield test_insert_string(
                 "ああああああいいいいいいうううううう",
                 {0, 12},
                 "ええええええ",
@@ -65,7 +73,7 @@ int main(string[] argv) {
                 2);
         
       case "insert_string_3":
-        return test_insert_string(
+        return yield test_insert_string(
                 "ああああああああああいいいいいいいいいいうううううううううう",
                 {1, 0},
                 "ええええええええええおおおおおおおおおお",
@@ -74,7 +82,7 @@ int main(string[] argv) {
                 3);
         
       case "insert_string_4":
-        return test_insert_string(
+        return yield test_insert_string(
                 "ああああああいいいいいいううううううええええええおおおおおお",
                 {1, 0},
                 "かかかかかか\nきききききき\n",
@@ -83,7 +91,7 @@ int main(string[] argv) {
                 4);
         
       case "insert_string_5":
-        return test_insert_string(
+        return yield test_insert_string(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {0, 0},
@@ -94,7 +102,7 @@ int main(string[] argv) {
                 5);
       
       case "insert_string_6":
-        return test_insert_string(
+        return yield test_insert_string(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {0, 1},
@@ -105,7 +113,7 @@ int main(string[] argv) {
                 5);
 
       case "insert_string_7":
-        return test_insert_string(
+        return yield test_insert_string(
                 "ああああああいいいいいいうううううう",
                 {0, 17},
                 "ええええええ",
@@ -114,7 +122,7 @@ int main(string[] argv) {
                 2);
             
       case "delete_char_1":
-        return test_delete_char(
+        return yield test_delete_char(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {0, 0},
@@ -124,7 +132,7 @@ int main(string[] argv) {
                 4);
 
       case "delete_char_2":
-        return test_delete_char(
+        return yield test_delete_char(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {1, 10},
@@ -134,7 +142,7 @@ int main(string[] argv) {
                 3);
 
       case "delete_char_backward_1":
-        return test_delete_char_backward(
+        return yield test_delete_char_backward(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {1, 1},
@@ -145,7 +153,7 @@ int main(string[] argv) {
                 4);
 
       case "delete_char_backward_2":
-        return test_delete_char_backward(
+        return yield test_delete_char_backward(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {1, 0},
@@ -156,7 +164,7 @@ int main(string[] argv) {
                 4);
 
       case "delete_char_backward_3":
-        return test_delete_char_backward(
+        return yield test_delete_char_backward(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
                         + "ええええええええええおおおおおおおおおおかかか",
                 {1, 1},
@@ -167,7 +175,7 @@ int main(string[] argv) {
                 4);
 
       case "delete_char_backward_4":
-        return test_delete_char_backward(
+        return yield test_delete_char_backward(
                 "ああああああああああ",
                 {0, 10},
                 1,
@@ -176,7 +184,7 @@ int main(string[] argv) {
                 1);
 
       case "delete_char_backward_5":
-        return test_delete_char_backward(
+        return yield test_delete_char_backward(
                 "ああああああああああ\nいいいいいいいいいい\nうううううううううう\n"
                         + "ええええええええええ\nおおおおおおおおおお\nかかか",
                 {2, 0},
@@ -187,7 +195,7 @@ int main(string[] argv) {
                 6);
 
       case "delete_char_backward_6":
-        return test_delete_char_backward(
+        return yield test_delete_char_backward(
                 "\n\nあ\n\n\n",
                 {1, 0},
                 1,
@@ -196,7 +204,7 @@ int main(string[] argv) {
                 5);
 
       case "insert_newline_1":
-        return test_insert_newline(
+        return yield test_insert_newline(
                 "あああああいいいいいうううううえええ\n",
                 {0, 5},
                 1,
@@ -205,7 +213,7 @@ int main(string[] argv) {
                 3);
         
       case "preedit_changed_1":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいい",
                 {0, 6},
                 { "う", "ええ", "おおお", "かかかか" },
@@ -214,7 +222,7 @@ int main(string[] argv) {
                 1);
                 
       case "preedit_changed_2":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいい",
                 {0, 6},
                 { "うううううう", "えええ" },
@@ -223,7 +231,7 @@ int main(string[] argv) {
                 1);
                 
       case "preedit_changed_3":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいいうううううう",
                 {0, 6},
                 { "ええええええ", "おおお" },
@@ -232,7 +240,7 @@ int main(string[] argv) {
                 2);
                 
       case "preedit_changed_4":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいいうううううう",
                 {0, 17},
                 { "ええええええ" },
@@ -241,7 +249,7 @@ int main(string[] argv) {
                 2);
                 
       case "preedit_changed_5":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいいうううううう",
                 {0, 17},
                 { "え", "おお", "かかか", "きききき" },
@@ -250,7 +258,7 @@ int main(string[] argv) {
                 2);
                 
       case "preedit_changed_6":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいいうううううう",
                 {0, 17},
                 { "え", "おお", "かかか" },
@@ -259,7 +267,7 @@ int main(string[] argv) {
                 2);
                 
       case "preedit_changed_7":
-        return test_preedit_changed(
+        return yield test_preedit_changed(
                 "ああああああいいいいいいうううううう",
                 {0, 18},
                 { "え", "おお", "かかか" },
@@ -268,7 +276,7 @@ int main(string[] argv) {
                 2);
 
       case "delete_selection_1":
-        return test_delete_selection(
+        return yield test_delete_selection(
                 "ああああああいいいいいいうううううう",
                 {0, 6}, {0, 12},
                 "ああああああうううううう",
@@ -276,7 +284,7 @@ int main(string[] argv) {
                 1);
         
       case "delete_selection_2":
-        return test_delete_selection(
+        return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
                 {0, 19}, {1, 1},
                 "ああああああいいいいいいううううううえくえ",
@@ -284,7 +292,7 @@ int main(string[] argv) {
                 2);
         
       case "delete_selection_3":
-        return test_delete_selection(
+        return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
                 {0, 19}, {1, 1},
                 "ああああああいいいいいいううううううえくえ",
@@ -292,7 +300,7 @@ int main(string[] argv) {
                 2);
         
       case "delete_selection_4":
-        return test_delete_selection(
+        return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
                 {0, 19}, {1, 2},
                 "ああああああいいいいいいううううううええ",
@@ -300,7 +308,7 @@ int main(string[] argv) {
                 1);
         
       case "delete_selection_5":
-        return test_delete_selection(
+        return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
                 {0, 19}, {1, 4},
                 "ああああああいいいいいいううううううえ",
@@ -308,13 +316,13 @@ int main(string[] argv) {
                 1);
 
       case "selection_to_string_1":
-        return test_selection_to_string(
+        return yield test_selection_to_string(
                 "ああああああいいいいいいううううううええおおおおおおかかかかかか",
                 {0, 6}, {0, 11},
                 "いいいいいい");
 
       case "selection_to_string_2":
-        return test_selection_to_string(
+        return yield test_selection_to_string(
                 "ああああああいいいいいいううううううええおおおおおおかかかかかか",
                 {0, 18}, {1, 5},
                 "ええおおおおおお");
@@ -324,54 +332,44 @@ int main(string[] argv) {
     }
 }
 
-int test_construct_text(string src_text, ...) {
-    var model = new TextModel.from_string(src_text);
-    var l = va_list();
-    while (true) {
-        string? label = l.arg<string?>();
-        switch (label) {
-          case "length":
-            int expect_length = l.arg<int>();
-            print("length: expect = %d, actual = %d\n", expect_length, model.count_chars());
-            assert(model.count_chars() == expect_length);
-            break;
-          case "lines":
-            int expect_lines = l.arg<int>();
-            print("lines: expect = %d, actual = %d\n", expect_lines, model.count_lines());
-            assert(model.count_lines() == expect_lines);
-            break;
-          case "visible-lines":
-            int expect_visible_lines = l.arg<int>();
-            print("visible-lines: expect = %d, actual = %d\n", expect_visible_lines, model.count_visible_lines());
-            assert(model.count_visible_lines() == expect_visible_lines);
-            break;
-          default:
-            return 0;
-        }
-    }
+async int test_construct_text(string src_text, int expect_length, int expect_lines, int expect_visible_lines) {
+    var model = new TextModel();
+    yield model.set_contents_async(src_text);
+    debug("%s\n", model.get_contents());
+    print("length: expect = %d, actual = %d\n", expect_length, model.count_chars());
+    assert(model.count_chars() == expect_length);
+    print("lines: expect = %d, actual = %d\n", expect_lines, model.count_lines());
+    assert(model.count_lines() == expect_lines);
+    print("visible-lines: expect = %d, actual = %d\n", expect_visible_lines, model.count_visible_lines());
+    assert(model.count_visible_lines() == expect_visible_lines);
+    return 0;
 }
 
-int test_get_contents(string src_text, string expect) {
-    var model = new TextModel.from_string(src_text);
+async int test_get_contents(string src_text, string expect) {
+    var model = new TextModel();
+    yield model.set_contents_async(src_text);
     var result = model.get_contents();
     assert(result == expect);
     return 0;
 }
 
-int test_count_lines(string text, int expect) {
-    var model = new TextModel.from_string(text);
+async int test_count_lines(string text, int expect) {
+    var model = new TextModel();
+    yield model.set_contents_async(text);
     assert(model.count_lines() == expect);
     return 0;
 }
 
-int test_count_visible_lines(string text, int expect) {
-    var model = new TextModel.from_string(text);
+async int test_count_visible_lines(string text, int expect) {
+    var model = new TextModel();
+    yield model.set_contents_async(text);
     assert(model.count_visible_lines() == expect);
     return 0;
 }
 
-int test_insert_string(string text, CellPosition pos, string new_text, string expect, int expect_lines, int expect_visible_lines) {
-    var model = new TextModel.from_string(text);
+async int test_insert_string(string text, CellPosition pos, string new_text, string expect, int expect_lines, int expect_visible_lines) {
+    var model = new TextModel();
+    yield model.set_contents_async(text);
     model.set_cursor(pos);
     model.insert_string(new_text);
     string result = model.get_contents();
@@ -382,9 +380,10 @@ int test_insert_string(string text, CellPosition pos, string new_text, string ex
     return 0;
 }
 
-int test_preedit_changed(string orig_text, CellPosition preedit_start, string[] preedit_texts,
+async int test_preedit_changed(string orig_text, CellPosition preedit_start, string[] preedit_texts,
         string expect_string, int expect_lines, int expect_visible_lines) {
-    var model = new TextModel.from_string(orig_text);
+    var model = new TextModel();
+    yield model.set_contents_async(orig_text);
     model.set_cursor(preedit_start);
     model.start_preedit();
     for (int i = 0; i < preedit_texts.length - 1; i++) {
@@ -404,8 +403,9 @@ int test_preedit_changed(string orig_text, CellPosition preedit_start, string[] 
     return 0;
 }
 
-int test_delete_char(string text, CellPosition pos, string expect, int expect_lines, int expect_visible_lines) {
-    var model = new TextModel.from_string(text);
+async int test_delete_char(string text, CellPosition pos, string expect, int expect_lines, int expect_visible_lines) {
+    var model = new TextModel();
+    yield model.set_contents_async(text);
     model.set_cursor(pos);
     model.delete_char();
     string result = model.get_contents();
@@ -416,9 +416,10 @@ int test_delete_char(string text, CellPosition pos, string expect, int expect_li
     return 0;
 }
 
-int test_delete_selection(string orig_string, CellPosition selection_start,
+async int test_delete_selection(string orig_string, CellPosition selection_start,
         CellPosition selection_end, string expect, int expect_lines, int expect_visible_lines) {
-    var model = new TextModel.from_string(orig_string);
+    var model = new TextModel();
+    yield model.set_contents_async(orig_string);
     model.set_selection_start(selection_start);
     model.set_selection_end(selection_end);
     model.delete_selection();
@@ -430,9 +431,10 @@ int test_delete_selection(string orig_string, CellPosition selection_start,
     return 0;
 }
 
-int test_delete_char_backward(string orig_string, CellPosition cursor_pos, int delete_num,
+async int test_delete_char_backward(string orig_string, CellPosition cursor_pos, int delete_num,
         string expect, int expect_lines, int expect_visible_lines) {
-    var model = new TextModel.from_string(orig_string);
+    var model = new TextModel();
+    yield model.set_contents_async(orig_string);
     model.set_cursor(cursor_pos);
     for (int i = 0; i < delete_num; i++) {
         print("call delete char backward\n");
@@ -448,9 +450,10 @@ int test_delete_char_backward(string orig_string, CellPosition cursor_pos, int d
     return 0;
 }
 
-int test_insert_newline(string orig, CellPosition insert_pos, int insert_num, 
+async int test_insert_newline(string orig, CellPosition insert_pos, int insert_num, 
         string expect, int expect_lines, int expect_visible_lines) {
-    var model = new TextModel.from_string(orig);
+    var model = new TextModel();
+    yield model.set_contents_async(orig);
     model.set_cursor(insert_pos);
     for (int i = 0; i < insert_num; i++) {
         model.insert_string("\n");
@@ -466,9 +469,10 @@ int test_insert_newline(string orig, CellPosition insert_pos, int insert_num,
     return 0;
 }
 
-int test_selection_to_string(string orig, CellPosition selection_start,
+async int test_selection_to_string(string orig, CellPosition selection_start,
         CellPosition selection_end, string expect) {
-    var model = new TextModel.from_string(orig);
+    var model = new TextModel();
+    yield model.set_contents_async(orig);
     model.set_selection_start(selection_start);
     model.set_selection_end(selection_end);
     string selection = model.selection_to_string();
