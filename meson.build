@@ -52,26 +52,26 @@ executable(
   'com.github.aharotias2.genkoyoshi',
   [
     'src/main.vala',
-    'src/appwindow.vala',
+    'src/app-window.vala',
     'src/genkoyoshi.vala',
-    'src/textmodel.vala',
-    'src/textelement.vala',
-    'src/cellposition.vala',
-    'src/apperror.vala',
-    'src/appconst.vala',
-    'src/colorsetting.vala',
-    'src/fontsettings.vala',
-    'src/editmode.vala',
-    'src/wrapmode.vala',
+    'src/text-model.vala',
+    'src/text-element.vala',
+    'src/cell-position.vala',
+    'src/app-error.vala',
+    'src/app-const.vala',
+    'src/color-setting.vala',
+    'src/font-setting.vala',
+    'src/edit-mode.vala',
+    'src/wrap-mode.vala',
     'src/availability.vala',
-    'src/huriganahelper.vala',
-    'src/verticalformmap.vala',
-    'src/utf8utils.vala',
-    'src/convtype.vala',
-    'src/actiontype.vala',
-    'src/historyitem.vala',
+    'src/hurigana-helper.vala',
+    'src/vertical-form-map.vala',
+    'src/utf8-utils.vala',
+    'src/conv-type.vala',
+    'src/action-type.vala',
+    'src/history-item.vala',
     'src/history.vala',
-    'src/simplelist.vala',
+    'src/simple-list.vala',
     resources
   ],
   dependencies: [
@@ -89,26 +89,26 @@ executable(
 
 ## TextModelのテスト
 
-textmodeltests = executable(
+text_model_tests = executable(
   'TextModelTests',
   [
-    'test/textmodeltests.vala',
-    'src/textmodel.vala',
-    'src/textelement.vala',
-    'src/cellposition.vala',
-    'src/apperror.vala',
-    'src/editmode.vala',
-    'src/wrapmode.vala',
-    'src/appconst.vala',
+    'test/text-model-tests.vala',
+    'src/text-model.vala',
+    'src/text-element.vala',
+    'src/cell-position.vala',
+    'src/app-error.vala',
+    'src/edit-mode.vala',
+    'src/wrap-mode.vala',
+    'src/app-const.vala',
     'src/availability.vala',
-    'src/huriganahelper.vala',
-    'src/verticalformmap.vala',
-    'src/utf8utils.vala',
-    'src/convtype.vala',
-    'src/actiontype.vala',
-    'src/historyitem.vala',
+    'src/hurigana-helper.vala',
+    'src/vertical-form-map.vala',
+    'src/utf8-utils.vala',
+    'src/conv-type.vala',
+    'src/action-type.vala',
+    'src/history-item.vala',
     'src/history.vala',
-    'src/simplelist.vala',
+    'src/simple-list.vala',
     resources
   ],
   dependencies: [
@@ -118,52 +118,52 @@ textmodeltests = executable(
   ]
 )
 
-test('TextModelTests.construct_text_1', textmodeltests, args: ['construct_text_1'])
-test('TextModelTests.construct_text_2', textmodeltests, args: ['construct_text_2'])
-test('TextModelTests.construct_text_3', textmodeltests, args: ['construct_text_3'])
-test('TextModelTests.construct_text_4', textmodeltests, args: ['construct_text_4'])
-test('TextModelTests.get_contents_1', textmodeltests, args: ['get_contents_1'])
-test('TextModelTests.get_contents_2', textmodeltests, args: ['get_contents_2'])
-test('TextModelTests.count_lines_1', textmodeltests, args: ['count_lines_1'])
-test('TextModelTests.count_lines_2', textmodeltests, args: ['count_lines_2'])
-test('TextModelTests.count_visible_lines_1', textmodeltests, args: ['count_visible_lines_1'])
-test('TextModelTests.count_visible_lines_2', textmodeltests, args: ['count_visible_lines_2'])
-test('TextModelTests.insert_string_1', textmodeltests, args: ['insert_string_1'])
-test('TextModelTests.insert_string_2', textmodeltests, args: ['insert_string_2'])
-test('TextModelTests.insert_string_3', textmodeltests, args: ['insert_string_3'])
-test('TextModelTests.insert_string_4', textmodeltests, args: ['insert_string_4'])
-test('TextModelTests.insert_string_5', textmodeltests, args: ['insert_string_5'])
-test('TextModelTests.insert_string_6', textmodeltests, args: ['insert_string_6'])
-test('TextModelTests.insert_string_7', textmodeltests, args: ['insert_string_7'])
-test('TextModelTests.insert_newline_1', textmodeltests, args: ['insert_newline_1'])
-test('TextModelTests.delete_char_1', textmodeltests, args: ['delete_char_1'])
-test('TextModelTests.delete_char_2', textmodeltests, args: ['delete_char_2'])
-test('TextModelTests.delete_char_backward_1', textmodeltests, args: ['delete_char_backward_1'])
-test('TextModelTests.delete_char_backward_2', textmodeltests, args: ['delete_char_backward_2'])
-test('TextModelTests.delete_char_backward_3', textmodeltests, args: ['delete_char_backward_3'])
-test('TextModelTests.delete_char_backward_4', textmodeltests, args: ['delete_char_backward_4'])
-test('TextModelTests.delete_char_backward_5', textmodeltests, args: ['delete_char_backward_5'])
-test('TextModelTests.delete_char_backward_6', textmodeltests, args: ['delete_char_backward_6'])
-test('TextModelTests.preedit_changed_1', textmodeltests, args: ['preedit_changed_1'])
-test('TextModelTests.preedit_changed_2', textmodeltests, args: ['preedit_changed_2'])
-test('TextModelTests.preedit_changed_3', textmodeltests, args: ['preedit_changed_3'])
-test('TextModelTests.preedit_changed_4', textmodeltests, args: ['preedit_changed_4'])
-test('TextModelTests.preedit_changed_5', textmodeltests, args: ['preedit_changed_5'])
-test('TextModelTests.preedit_changed_6', textmodeltests, args: ['preedit_changed_6'])
-test('TextModelTests.delete_selection_1', textmodeltests, args: ['delete_selection_1'])
-test('TextModelTests.delete_selection_2', textmodeltests, args: ['delete_selection_2'])
-test('TextModelTests.delete_selection_3', textmodeltests, args: ['delete_selection_3'])
-test('TextModelTests.delete_selection_4', textmodeltests, args: ['delete_selection_4'])
-test('TextModelTests.delete_selection_5', textmodeltests, args: ['delete_selection_5'])
+test('TextModelTests.construct_text_1', text_model_tests, args: ['construct_text_1'])
+test('TextModelTests.construct_text_2', text_model_tests, args: ['construct_text_2'])
+test('TextModelTests.construct_text_3', text_model_tests, args: ['construct_text_3'])
+test('TextModelTests.construct_text_4', text_model_tests, args: ['construct_text_4'])
+test('TextModelTests.get_contents_1', text_model_tests, args: ['get_contents_1'])
+test('TextModelTests.get_contents_2', text_model_tests, args: ['get_contents_2'])
+test('TextModelTests.count_lines_1', text_model_tests, args: ['count_lines_1'])
+test('TextModelTests.count_lines_2', text_model_tests, args: ['count_lines_2'])
+test('TextModelTests.count_visible_lines_1', text_model_tests, args: ['count_visible_lines_1'])
+test('TextModelTests.count_visible_lines_2', text_model_tests, args: ['count_visible_lines_2'])
+test('TextModelTests.insert_string_1', text_model_tests, args: ['insert_string_1'])
+test('TextModelTests.insert_string_2', text_model_tests, args: ['insert_string_2'])
+test('TextModelTests.insert_string_3', text_model_tests, args: ['insert_string_3'])
+test('TextModelTests.insert_string_4', text_model_tests, args: ['insert_string_4'])
+test('TextModelTests.insert_string_5', text_model_tests, args: ['insert_string_5'])
+test('TextModelTests.insert_string_6', text_model_tests, args: ['insert_string_6'])
+test('TextModelTests.insert_string_7', text_model_tests, args: ['insert_string_7'])
+test('TextModelTests.insert_newline_1', text_model_tests, args: ['insert_newline_1'])
+test('TextModelTests.delete_char_1', text_model_tests, args: ['delete_char_1'])
+test('TextModelTests.delete_char_2', text_model_tests, args: ['delete_char_2'])
+test('TextModelTests.delete_char_backward_1', text_model_tests, args: ['delete_char_backward_1'])
+test('TextModelTests.delete_char_backward_2', text_model_tests, args: ['delete_char_backward_2'])
+test('TextModelTests.delete_char_backward_3', text_model_tests, args: ['delete_char_backward_3'])
+test('TextModelTests.delete_char_backward_4', text_model_tests, args: ['delete_char_backward_4'])
+test('TextModelTests.delete_char_backward_5', text_model_tests, args: ['delete_char_backward_5'])
+test('TextModelTests.delete_char_backward_6', text_model_tests, args: ['delete_char_backward_6'])
+test('TextModelTests.preedit_changed_1', text_model_tests, args: ['preedit_changed_1'])
+test('TextModelTests.preedit_changed_2', text_model_tests, args: ['preedit_changed_2'])
+test('TextModelTests.preedit_changed_3', text_model_tests, args: ['preedit_changed_3'])
+test('TextModelTests.preedit_changed_4', text_model_tests, args: ['preedit_changed_4'])
+test('TextModelTests.preedit_changed_5', text_model_tests, args: ['preedit_changed_5'])
+test('TextModelTests.preedit_changed_6', text_model_tests, args: ['preedit_changed_6'])
+test('TextModelTests.delete_selection_1', text_model_tests, args: ['delete_selection_1'])
+test('TextModelTests.delete_selection_2', text_model_tests, args: ['delete_selection_2'])
+test('TextModelTests.delete_selection_3', text_model_tests, args: ['delete_selection_3'])
+test('TextModelTests.delete_selection_4', text_model_tests, args: ['delete_selection_4'])
+test('TextModelTests.delete_selection_5', text_model_tests, args: ['delete_selection_5'])
 
 ## CellPositionのテスト
 
-cellpositiontests = executable(
+cell_position_tests = executable(
   'CellPositionTests',
   [
-    'test/cellpositiontest.vala',
-    'src/cellposition.vala',
-    'src/appconst.vala'
+    'test/cell-position-tests.vala',
+    'src/cell-position.vala',
+    'src/app-const.vala'
   ],
   dependencies: [
     dependency('gtk+-3.0')
@@ -171,16 +171,16 @@ cellpositiontests = executable(
 )
 
 foreach i : range(1, 41)
-  test('CellPositionTests.@0@'.format(i), cellpositiontests, args: [i.to_string()])
+  test('CellPositionTests.@0@'.format(i), cell_position_tests, args: [i.to_string()])
 endforeach
 
 ## HuriganaHelperのテスト
 
-huriganahelpertests = executable(
+hurigana_helper_tests = executable(
   'HuriganaHelperTests',
   [
-    'test/huriganahelpertest.vala',
-    'src/huriganahelper.vala'
+    'test/hurigana-helper-tests.vala',
+    'src/hurigana-helper.vala'
   ],
   dependencies: [
     dependency('gtk+-3.0')
@@ -188,16 +188,16 @@ huriganahelpertests = executable(
 )
 
 foreach i : range(1, 4)
-  test('HuriganaHelperTest.@0@'.format(i), huriganahelpertests, args: [i.to_string()])
+  test('HuriganaHelperTest.@0@'.format(i), hurigana_helper_tests, args: [i.to_string()])
 endforeach
 
 ## Utf8Utilsのテスト
 
-utf8utilstests = executable(
+utf8_utils_tests = executable(
   'Utf8UtilsTests',
   [
-    'test/utf8utilstest.vala',
-    'src/utf8utils.vala'
+    'test/utf8-utils-tests.vala',
+    'src/utf8-utils.vala'
   ],
   dependencies: [
     dependency('gtk+-3.0')
@@ -205,16 +205,16 @@ utf8utilstests = executable(
 )
 
 foreach i : range(1, 14)
-  test('Utf8UtilsTest.@0@'.format(i), utf8utilstests, args: [i.to_string()])
+  test('Utf8UtilsTest.@0@'.format(i), utf8_utils_tests, args: [i.to_string()])
 endforeach
 
 ## SimpleListのテスト
 
-simplelisttests = executable(
+simple_list_tests = executable(
   'SimpleListTests',
   [
-    'test/simplelisttest.vala',
-    'src/simplelist.vala'
+    'test/simple-list-tests.vala',
+    'src/simple-list.vala'
   ],
   dependencies: [
     dependency('glib-2.0'),
@@ -223,5 +223,5 @@ simplelisttests = executable(
 )
 
 foreach i : range(1, 48)
-  test('SimpleListTest.@0@'.format(i), simplelisttests, args: [i.to_string()])
+  test('SimpleListTest.@0@'.format(i), simple_list_tests, args: [i.to_string()])
 endforeach
