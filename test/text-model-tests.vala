@@ -278,7 +278,7 @@ async int select_test(string test_name) {
       case "delete_selection_1":
         return yield test_delete_selection(
                 "ああああああいいいいいいうううううう",
-                {0, 6}, {0, 12},
+                {{0, 6}, {0, 12}},
                 "ああああああうううううう",
                 1,
                 1);
@@ -286,7 +286,7 @@ async int select_test(string test_name) {
       case "delete_selection_2":
         return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
-                {0, 19}, {1, 1},
+                {{0, 19}, {1, 1}},
                 "ああああああいいいいいいううううううえくえ",
                 1,
                 2);
@@ -294,7 +294,7 @@ async int select_test(string test_name) {
       case "delete_selection_3":
         return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
-                {0, 19}, {1, 1},
+                {{0, 19}, {1, 1}},
                 "ああああああいいいいいいううううううえくえ",
                 1,
                 2);
@@ -302,7 +302,7 @@ async int select_test(string test_name) {
       case "delete_selection_4":
         return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
-                {0, 19}, {1, 2},
+                {{0, 19}, {1, 2}},
                 "ああああああいいいいいいううううううええ",
                 1,
                 1);
@@ -310,7 +310,7 @@ async int select_test(string test_name) {
       case "delete_selection_5":
         return yield test_delete_selection(
                 "ああああああいいいいいいううううううえおかきくえ",
-                {0, 19}, {1, 4},
+                {{0, 19}, {1, 4}},
                 "ああああああいいいいいいううううううえ",
                 1,
                 1);
@@ -318,13 +318,13 @@ async int select_test(string test_name) {
       case "selection_to_string_1":
         return yield test_selection_to_string(
                 "ああああああいいいいいいううううううええおおおおおおかかかかかか",
-                {0, 6}, {0, 11},
+                {{0, 6}, {0, 11}},
                 "いいいいいい");
 
       case "selection_to_string_2":
         return yield test_selection_to_string(
                 "ああああああいいいいいいううううううええおおおおおおかかかかかか",
-                {0, 18}, {1, 5},
+                {{0, 18}, {1, 5}},
                 "ええおおおおおお");
         
       default:
@@ -416,12 +416,11 @@ async int test_delete_char(string text, CellPosition pos, string expect, int exp
     return 0;
 }
 
-async int test_delete_selection(string orig_string, CellPosition selection_start,
-        CellPosition selection_end, string expect, int expect_lines, int expect_visible_lines) {
+async int test_delete_selection(string orig_string, Region selection,
+        string expect, int expect_lines, int expect_visible_lines) {
     var model = new TextModel();
     yield model.set_contents_async(orig_string);
-    model.set_selection_start(selection_start);
-    model.set_selection_end(selection_end);
+    model.set_selection(selection);
     model.delete_selection();
     string result = model.get_contents();
     print("result: %s\nexpect: %s\n", result, expect);
@@ -469,14 +468,12 @@ async int test_insert_newline(string orig, CellPosition insert_pos, int insert_n
     return 0;
 }
 
-async int test_selection_to_string(string orig, CellPosition selection_start,
-        CellPosition selection_end, string expect) {
+async int test_selection_to_string(string orig, Region selection, string expect) {
     var model = new TextModel();
     yield model.set_contents_async(orig);
-    model.set_selection_start(selection_start);
-    model.set_selection_end(selection_end);
-    string selection = model.selection_to_string();
-    print("result => %s, expect => %s\n", selection, expect);
-    assert(selection == expect);
+    model.set_selection(selection);
+    string selected_text = model.selection_to_string();
+    print("result => %s, expect => %s\n", selected_text, expect);
+    assert(selected_text == expect);
     return 0;
 }

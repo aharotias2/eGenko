@@ -157,7 +157,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
     public void next_page() {
         page++;
         page_changed(page, model_value.count_pages());
-        model.set_cursor({model.get_selection_end().hpos + X_LENGTH, model.get_selection_end().vpos});
+        model.set_cursor({model.get_selection_last().hpos + X_LENGTH, model.get_selection_last().vpos});
         queue_draw();
     }
     
@@ -168,7 +168,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
         if (page > 0) {
             page--;
             page_changed(page, model_value.count_pages());
-            model.set_cursor({model.get_selection_end().hpos - X_LENGTH, model.get_selection_end().vpos});
+            model.set_cursor({model.get_selection_last().hpos - X_LENGTH, model.get_selection_last().vpos});
             queue_draw();
         }
     }
@@ -584,7 +584,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
             for (int y = 0; y < Y_LENGTH; y++) {
                 if (position[x, y].x <= event.x && event.x < position[x, y].x + cell_width
                         && position[x, y].y <= event.y && event.y < position[x, y].y + cell_width) {
-                    model.set_selection_end({page * X_LENGTH + x, y});
+                    model.set_selection_last({page * X_LENGTH + x, y});
                     queue_draw();
                     return false;
                 }
@@ -608,7 +608,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
                 for (int y = 0; y < Y_LENGTH; y++) {
                     if (position[x, y].x <= event.x && event.x < position[x, y].x + cell_width
                             && position[x, y].y <= event.y && event.y < position[x, y].y + cell_width) {
-                        model.set_selection_end({x, y});
+                        model.set_selection_last({x, y});
                         queue_draw();
                         return false;
                     }

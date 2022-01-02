@@ -40,10 +40,8 @@ public class TextModel : Object {
     // プライベートフィールド
         
     private Gee.List<SimpleList<TextElement>> data;
-    private CellPosition selection_start = { 0, 0 };
-    private CellPosition selection_end = { 0, 0 };
-    private CellPosition preedit_start = { -1, -1 };
-    private CellPosition preedit_end = { -1, -1 };
+    private Region selection = {{0, 0}, {0, 0}};
+    private Region preedit = {{-1, -1}, {-1, -1}};
     private History undo_list;
     private History redo_list;
     
@@ -125,16 +123,7 @@ public class TextModel : Object {
      * 指定した位置が選択範囲に含まれているかどうかを判定する。
      */
     public bool is_in_selection(CellPosition pos) {
-        int offset1 = selection_start.hpos * Y_LENGTH + selection_start.vpos;
-        int offset2 = selection_end.hpos * Y_LENGTH + selection_end.vpos;
-        int offset3 = pos.hpos * Y_LENGTH + pos.vpos;
-        if (offset1 == offset2) {
-            return offset1 == offset3;
-        } else if (offset1 < offset2) {
-            return offset1 <= offset3 && offset3 <= offset2;
-        } else {
-            return offset2 <= offset3 && offset3 <= offset1;
-        }
+        return pos in selection;
     }
     
     /**
@@ -142,11 +131,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_foreward(int offset = 1, bool is_shift_masked = false) {
-        selection_end.self_add_offset(offset);
+        selection.last.self_add_offset(offset);
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
     
     /**
@@ -154,11 +143,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_backward(int offset = 1, bool is_shift_masked = false) {
-        selection_end.self_subtract_offset(offset);
+        selection.last.self_subtract_offset(offset);
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
 
     /**
@@ -166,11 +155,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_to_beginning_of_line(bool is_shift_masked = false) {
-        selection_end.vpos = 0;
+        selection.last.vpos = 0;
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
 
     /**
@@ -178,11 +167,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_to_end_of_line(bool is_shift_masked = false) {
-        selection_end.vpos = X_LENGTH - 1;
+        selection.last.vpos = X_LENGTH - 1;
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
     
     /**
@@ -190,11 +179,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_to_left(int offset = 1, bool is_shift_masked = false) {
-        selection_end.self_add({offset, 0});
+        selection.last.self_add({offset, 0});
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
 
     /**
@@ -203,13 +192,13 @@ public class TextModel : Object {
      * カーソルが先頭行にある場合、何もしない。
      */
     public void move_to_right(int offset = 1, bool is_shift_masked = false) {
-        if (selection_end.hpos > 0) {
-            selection_end.self_subtract({offset, 0});
+        if (selection.last.hpos > 0) {
+            selection.last.self_subtract({offset, 0});
             if (!is_shift_masked) {
-                selection_start = selection_end;
+                selection.start = selection.last;
             }
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
 
     /**
@@ -217,11 +206,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_to_leftend_of_page(int page = 0, bool is_shift_masked = false) {
-        selection_end.hpos = page * Y_LENGTH + Y_LENGTH - 1;
+        selection.last.hpos = page * Y_LENGTH + Y_LENGTH - 1;
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
 
     /**
@@ -229,11 +218,11 @@ public class TextModel : Object {
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
      */
     public void move_to_rightend_of_page(int page = 0, bool is_shift_masked = false) {
-        selection_end.hpos = page * Y_LENGTH;
+        selection.last.hpos = page * Y_LENGTH;
         if (!is_shift_masked) {
-            selection_start = selection_end;
+            selection.start = selection.last;
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
 
     /**
@@ -241,36 +230,44 @@ public class TextModel : Object {
      */
     public void set_cursor(CellPosition new_pos) {
         if (edit_mode == PREEDITING) {
-            delete_between(selection_start, selection_end);
+            delete_between(selection);
             end_preedit();
         }
-        selection_start = new_pos;
-        selection_end = new_pos;
-        cursor_moved(selection_end);
+        selection.move_to(new_pos);
+        cursor_moved(selection.last);
+    }
+    
+    public Region get_selection() {
+        return selection;
+    }
+    
+    public void set_selection(Region selection) {
+        this.selection = selection;
+        cursor_moved(selection.last);
     }
     
     /**
      * 選択範囲の始点を設定する。
      */
     public void set_selection_start(CellPosition new_pos) {
-        selection_start = new_pos;
-        cursor_moved(selection_start);
+        selection.start = new_pos;
+        cursor_moved(selection.start);
     }
 
     public CellPosition get_selection_start() {
-        return selection_start;
+        return selection.start;
     }
     
     /**
      * 選択範囲の終点を設定する。
      */
-    public void set_selection_end(CellPosition new_pos) {
-        selection_end = new_pos;
-        cursor_moved(selection_end);
+    public void set_selection_last(CellPosition new_pos) {
+        selection.last = new_pos;
+        cursor_moved(selection.last);
     }
 
-    public CellPosition get_selection_end() {
-        return selection_end;
+    public CellPosition get_selection_last() {
+        return selection.last;
     }
     
     public void set_contents(string new_text) {
@@ -307,12 +304,12 @@ public class TextModel : Object {
      */
     public string selection_to_string() {
         CellPosition p1, p2, p;
-        if (selection_start.comp_lt(selection_end)) {
-            p1 = selection_start;
-            p2 = selection_end;
+        if (selection.start.comp_lt(selection.last)) {
+            p1 = selection.start;
+            p2 = selection.last;
         } else {
-            p1 = selection_end;
-            p2 = selection_start;
+            p1 = selection.last;
+            p2 = selection.start;
         }
         p = p1;
         var sb = new StringBuilder();
@@ -335,7 +332,7 @@ public class TextModel : Object {
     /**
      * 文字列を挿入する。
      *
-     * 選択範囲がある場合 (selection_startとselection_endが違う場合)、
+     * 選択範囲がある場合 (selection.startとselection.lastが違う場合)、
      * 選択範囲を削除して挿入する。
      */
     public void insert_string(string src) {
@@ -343,14 +340,14 @@ public class TextModel : Object {
         // 挿入するテキストを作成する。
         EditMode tmp = DIRECT_INPUT;
         if (edit_mode == PREEDITING) {
-            selection_start = preedit_start;
-            selection_end = preedit_end;
+            selection.start = preedit.start;
+            selection.last = preedit.last;
             tmp = edit_mode;
         }
         
         debug("insert_string (%s) at [[%d, %d], [%d, %d]]\n",
-                src, selection_start.hpos, selection_start.vpos,
-                selection_end.hpos, selection_end.vpos);
+                src, selection.start.hpos, selection.start.vpos,
+                selection.last.hpos, selection.last.vpos);
 
         var new_text = construct_text(src, DIRECT_INPUT, NOWRAP);
         undo_list.new_action();
@@ -366,49 +363,41 @@ public class TextModel : Object {
         debug("is newline");
         var text = construct_text("\n", DIRECT_INPUT, NOWRAP);
         insert_text(text);
-        undo_list.push_action(INSERT, selection_start, selection_end, text);
+        undo_list.push_action(INSERT, selection.start, selection.last, text);
     }
 
     public void insert_text(Gee.List<SimpleList<TextElement>> new_piece) {
         // 選択範囲の二つの点のうち前にあるものをp1、後ろにあるものをp2とする
-        CellPosition p1, p2;
-        if (selection_start.comp_le(selection_end)) {
-            p1 = selection_start;
-            p2 = selection_end;
-        } else {
-            p1 = selection_end;
-            p2 = selection_start;
-        }
+        Region region = selection.adjust();
 
         // 選択範囲内の文字列を削除する。
-        if (!p1.comp_eq(p2)) {
+        if (!region.start.comp_eq(region.last)) {
             debug("insert_text go into delete selection");
-            delete_between(selection_start, selection_end);
+            delete_between(selection);
             debug("insert_text come back from delete selection");
         }
         
-        selection_start = p1;
-        selection_end = p1;
+        selection.move_to(region.start);
 
         // 選択範囲の先頭が行末より下にある場合、空白文字で埋める。
-        if (p1.hpos >= data.size || p1.vpos >= data[p1.hpos].size) {
-            pad_space(p1.hpos, p1.vpos);
+        if (region.start.hpos >= data.size || region.start.vpos >= data[region.start.hpos].size) {
+            pad_space(region.start.hpos, region.start.vpos);
         }
         
-        var line = data[p1.hpos];
+        var line = data[region.start.hpos];
         
         if (text_is_newline(new_piece)) {
             debug("insert a newline");
             // 改行を挿入する
-            if (p1.vpos < line.size) {
-                var new_line = line.cut_at(p1.vpos);
+            if (region.start.vpos < line.size) {
+                var new_line = line.cut_at(region.start.vpos);
                 line.add(new TextElement("\n"));
-                data.insert(p1.hpos + 1, new_line);
-                CellPosition new_pos = {p1.hpos + 1, 0};
+                data.insert(region.start.hpos + 1, new_line);
+                CellPosition new_pos = {region.start.hpos + 1, 0};
                 debug("new pos = [%d, %d]", new_pos.hpos, new_pos.vpos);
                 set_cursor(new_pos);
             } else {
-                CellPosition new_pos = {p1.hpos + 1, 0};
+                CellPosition new_pos = {region.start.hpos + 1, 0};
                 debug("new pos = [%d, %d]", new_pos.hpos, new_pos.vpos);
                 set_cursor(new_pos);
                 pad_space(new_pos.hpos, new_pos.vpos);
@@ -419,47 +408,47 @@ public class TextModel : Object {
             debug("insert a single line");
             // 挿入する文字列が一行の場合は単純に挿入して行折り返し処理をする。
             int new_piece_size = new_piece[0].size;
-            line.insert_all(p1.vpos, new_piece[0]);
-            if (data[p1.hpos].size >= Y_LENGTH) {
-                wrap_line(p1.hpos);
+            line.insert_all(region.start.vpos, new_piece[0]);
+            if (data[region.start.hpos].size >= Y_LENGTH) {
+                wrap_line(region.start.hpos);
             }
 
             // カーソルを挿入した文字列の末尾の位置に移動する。
-            selection_start = p1.add_offset(new_piece_size);
+            selection.start = region.start.add_offset(new_piece_size);
         } else {
             debug("insert multiple lines");
             int new_piece_last_size = new_piece.last().size;
             // 複数行挿入する場合は一行ずつ処理をする。
-            if (p1.vpos == 0) {
+            if (region.start.vpos == 0) {
                 if (line.size > 0) {
                     new_piece.last().concat(line);
                 }
-            } else if (p1.vpos >= line.size) {
+            } else if (region.start.vpos >= line.size) {
                 new_piece.first().insert_all(0, line);
             } else {
                 var part1 = line;
-                var part2 = part1.cut_at(p1.vpos);
+                var part2 = part1.cut_at(region.start.vpos);
                 new_piece[0].insert_all(0, part1);
                 new_piece.last().concat(part2);
             }
 
-            data.remove_at(p1.hpos);
+            data.remove_at(region.start.hpos);
 
             int n_lines = 0;
             for (int i = new_piece.size - 1; i >= 0; i--) {
-                data.insert(p1.hpos, new_piece[i]);
-                n_lines += wrap_line(p1.hpos);
+                data.insert(region.start.hpos, new_piece[i]);
+                n_lines += wrap_line(region.start.hpos);
             }
 
             // カーソルを挿入した文字列の末尾の位置に移動する。
-            selection_start = {
-                p1.hpos + n_lines,
+            selection.start = {
+                region.start.hpos + n_lines,
                 new_piece_last_size % Y_LENGTH
             };
         }
         
-        selection_end = selection_start;
-        cursor_moved(selection_end);
+        selection.last = selection.start;
+        cursor_moved(selection.last);
     }
     
     /**
@@ -468,8 +457,7 @@ public class TextModel : Object {
      */
     public void start_preedit() {
         debug("start_preedit");
-        preedit_start = selection_start;
-        preedit_end = preedit_start;
+        preedit.move_to(selection.start);
         edit_mode = PREEDITING;
     }
 
@@ -479,8 +467,7 @@ public class TextModel : Object {
      */
     public void end_preedit() {
         debug("end_preedit");
-        preedit_start = { -1, -1 };
-        preedit_end = { -1, -1 };
+        preedit.move_to({ -1, -1 });
         edit_mode = DIRECT_INPUT;
     }
 
@@ -494,29 +481,29 @@ public class TextModel : Object {
             return;
         }
 
-        selection_start = preedit_start;
-        selection_end = preedit_end;
+        selection.start = preedit.start;
+        selection.last = preedit.last;
         debug("preedit_changed (%s) at [[%d, %d], [%d, %d]]\n",
-                preedit_string, selection_start.hpos, selection_start.vpos,
-                selection_end.hpos, selection_end.vpos);
+                preedit_string, selection.start.hpos, selection.start.vpos,
+                selection.last.hpos, selection.last.vpos);
 
         var preedit_text = construct_text(preedit_string, PREEDITING, NOWRAP);
         var preedit_size = preedit_text[0].size;
 
         insert_text(preedit_text);
         
-        preedit_end = preedit_start.add_offset(preedit_size);
-        selection_start = preedit_start;
-        selection_end = preedit_end;
-        cursor_moved(preedit_end);
+        preedit.last = preedit.start.add_offset(preedit_size);
+        selection.start = preedit.start;
+        selection.last = preedit.last;
+        cursor_moved(preedit.last);
     }
 
     /**
      * 文字を削除する。
      */
     public void delete_char() {
-        delete_between(selection_start, selection_end);
-        cursor_moved(selection_end);
+        delete_between(selection);
+        cursor_moved(selection.last);
     }
     
     /**
@@ -525,36 +512,35 @@ public class TextModel : Object {
     public void delete_char_backward() {
         if (data == null || data.size == 0 || (data.size == 1 && data[0].size == 0)) {
             // テキストが空の場合 (1文字も持っていない場合) は何もしない。カーソルを0, 0の位置に戻す。
-            selection_start = { 0, 0 };
-            selection_end = { 0, 0 };
-            cursor_moved(selection_start);
+            selection = {{0, 0}, {0, 0}};
+            cursor_moved(selection.start);
             return;
         }
-        if (selection_start.comp_eq(selection_end)) {
+        if (selection.start.comp_eq(selection.last)) {
             // カーソルが1つ (選択範囲がない) の場合
-            if (selection_start.comp_eq({0, 0})) {
+            if (selection.start.comp_eq({0, 0})) {
                 // カーソルが0, 0の位置にある場合、何もしない。
                 return;
             }
             // バックスペース押した時のイベントなのでカーソルを一つ後ろに移動する。
-            selection_start.self_subtract_offset(1);
-            if (selection_start.hpos >= data.size) {
+            selection.start.self_subtract_offset(1);
+            if (selection.start.hpos >= data.size) {
                 // カーソルが文書全体より後ろにある場合、カーソルを文書の最後の位置に動かして終了する
-                selection_start.hpos = data.size - 1;
-                selection_start.vpos = data[selection_start.hpos].size;
-                selection_end = selection_start;
-                cursor_moved(selection_start);
+                selection.start.hpos = data.size - 1;
+                selection.start.vpos = data[selection.start.hpos].size;
+                selection.last = selection.start;
+                cursor_moved(selection.start);
                 return;
-            } else if (selection_start.vpos >= data[selection_start.hpos].size) {
+            } else if (selection.start.vpos >= data[selection.start.hpos].size) {
                 // カーソルが行末より下にある場合行末に移動する。
-                selection_start.vpos = data[selection_start.hpos].size - 1;
+                selection.start.vpos = data[selection.start.hpos].size - 1;
             }
-            selection_end = selection_start;
+            selection.last = selection.start;
         }
         debug("delete at [[%d, %d], [%d, %d]]\n",
-                selection_start.hpos, selection_start.vpos, selection_end.hpos, selection_end.vpos);
-        delete_between(selection_start, selection_end);
-        cursor_moved(selection_start);
+                selection.start.hpos, selection.start.vpos, selection.last.hpos, selection.last.vpos);
+        delete_between(selection);
+        cursor_moved(selection.start);
     }
     
     /**
@@ -634,8 +620,8 @@ public class TextModel : Object {
      * 選択範囲を削除する。
      */
     public void delete_selection() {
-        delete_between(selection_start, selection_end);
-        cursor_moved(selection_end);
+        delete_between(selection);
+        cursor_moved(selection.last);
     }
 
     
@@ -656,17 +642,16 @@ public class TextModel : Object {
      */
     public void select_all() {
         if (data.size == 0) {
-            selection_start = { 0, 0 };
-            selection_end = { 0, 0 };
+            selection = {{0, 0}, {0, 0}};
         } else {
-            selection_start = { 0, 0 };
+            selection.start = { 0, 0 };
             if (data.last().size == 0) {
-                selection_end = {data.size - 1, 0 };
+                selection.last = {data.size - 1, 0 };
             } else {
-                selection_end = { data.size - 1, data.last().size - 1 };
+                selection.last = { data.size - 1, data.last().size - 1 };
             }
         }
-        cursor_moved(selection_end);
+        cursor_moved(selection.last);
     }
     
     // プライベートメソッド
@@ -676,68 +661,61 @@ public class TextModel : Object {
      * 二つのポジションが同じ位置である場合、一つの文字のみ削除する。
      * 二つのポジションが最終行以降にある場合、何もしない。
      */
-    private void delete_between(CellPosition start_pos, CellPosition end_pos) {
-        // 選択範囲の二つの点のうち前にあるものをp1、後ろにあるものをp2とする
-        CellPosition p1, p2, p3;
-        if (start_pos.comp_le(end_pos)) {
-            p1 = start_pos;
-            p2 = end_pos;
-        } else {
-            p1 = end_pos;
-            p2 = start_pos;
-        }
-        p3 = p2.add_offset(1);
+    private void delete_between(Region region) {
+        // 選択範囲の二つの点のうち前にあるものをregion.start、後ろにあるものをregion.lastとする
+        region = region.adjust();
+        CellPosition p3 = region.last.add_offset(1);
         
-        if (p1.hpos >= data.size) {
+        if (region.start.hpos >= data.size) {
             // 選択範囲が最終行以後にある場合は何もせず終了する。
             return;
         }
 
         //undo_list.start();
-        if (p1.comp_eq(p2)) {
-            var line = data[p1.hpos];
-            if (p1.vpos < line.size) {
+        if (region.start.comp_eq(region.last)) {
+            var line = data[region.start.hpos];
+            if (region.start.vpos < line.size) {
                 // カーソルが行の末尾より下にある場合は何もしないようにする。
-                if (line.size == 1 && p1.hpos > 0) {
+                if (line.size == 1 && region.start.hpos > 0) {
                     // 削除するのが行の最後の文字である場合はその行ごと削除する。
-                    data.remove_at(p1.hpos);
+                    data.remove_at(region.start.hpos);
                 } else {
                     // カーソル位置の文字を削除する。
-                    line.remove_at(p1.vpos);
+                    line.remove_at(region.start.vpos);
                 }
             }
-        } else if (p1.hpos == p2.hpos) {
-            // p1とp2が同じ行にある場合
-            var line = data[p1.hpos];
-            if (p1.vpos == 0 && p2.vpos >= line.size - 1) {
-                if (data.size == 1 && p1.hpos == 0) {
+        } else if (region.start.hpos == region.last.hpos) {
+            // region.startとregion.lastが同じ行にある場合
+            var line = data[region.start.hpos];
+            if (region.start.vpos == 0 && region.last.vpos >= line.size - 1) {
+                if (data.size == 1 && region.start.hpos == 0) {
                     line.clear();
                 } else {
                     data.remove(line);
                 }
-            } else if (p1.vpos < line.size) {
+            } else if (region.start.vpos < line.size) {
                 if (edit_mode == DIRECT_INPUT) {
-                    p2.self_add_offset(1);
+                    region.last.self_add_offset(1);
                 }
-                line.slice_cut(p1.vpos, p2.vpos);
+                line.slice_cut(region.start.vpos, region.last.vpos);
             }
             //undo_list.put(DELETE, piece);
         } else {
-            // p1とp2が違う行にある場合
-            var line1 = data[p1.hpos];
-            if (p1.vpos >= line1.size) {
-                p1  = {p1.hpos + 1, 0};
-                if (p1.hpos >= data.size) {
+            // region.startとregion.lastが違う行にある場合
+            var line1 = data[region.start.hpos];
+            if (region.start.vpos >= line1.size) {
+                region.start  = {region.start.hpos + 1, 0};
+                if (region.start.hpos >= data.size) {
                     return;
-                } else if (p1.comp_eq(p2)) {
-                    delete_between(p1, p2);
+                } else if (region.start.comp_eq(region.last)) {
+                    delete_between(region);
                     return;
                 }
             }
             // 選択範囲の前の部分に選択範囲の後ろの部分を追加する。
             var part1 = line1;
-            var part2 = part1.cut_at(p1.vpos);
-            var p4 = p2;
+            var part2 = part1.cut_at(region.start.vpos);
+            var p4 = region.last;
             if (edit_mode == DIRECT_INPUT) {
                 p4 = p3;
             }
@@ -750,18 +728,17 @@ public class TextModel : Object {
                 }
             }
             // 選択範囲の開始と終了の間の行を削除する。
-            for (int i = p1.hpos; i <= p4.hpos && p1.hpos < data.size; i++) {
-                //undo_list.put(DELETE, data[p1.hpos]);
-                data.remove_at(p1.hpos);
+            for (int i = region.start.hpos; i <= p4.hpos && region.start.hpos < data.size; i++) {
+                //undo_list.put(DELETE, data[region.start.hpos]);
+                data.remove_at(region.start.hpos);
             }
             // 切り取り後の行を挿入する。
-            data.insert(p1.hpos, part1);
+            data.insert(region.start.hpos, part1);
         }
         //undo_list.finish();
         // 行送りを調整する。
-        wrap_line(p1.hpos);
-        selection_start = p1;
-        selection_end = p1;
+        wrap_line(region.start.hpos);
+        selection.move_to(region.start);
     }
 
     /**
