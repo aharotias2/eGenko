@@ -59,7 +59,7 @@ executable(
     'src/cell-position.vala',
     'src/region.vala',
     'src/app-error.vala',
-    'src/app-const.vala',
+    'src/app-consts.vala',
     'src/color-setting.vala',
     'src/font-setting.vala',
     'src/edit-mode.vala',
@@ -69,10 +69,13 @@ executable(
     'src/vertical-form-map.vala',
     'src/utf8-utils.vala',
     'src/conv-type.vala',
-    'src/action-type.vala',
-    'src/history-item.vala',
     'src/history.vala',
     'src/simple-list.vala',
+    'src/gee-list-utils.vala',
+    'src/actions/edit-action.vala',
+    'src/actions/abstract-edit-action.vala',
+    'src/actions/insert-text-action.vala',
+    'src/actions/delete-region-action.vala',
     resources
   ],
   dependencies: [
@@ -101,16 +104,19 @@ text_model_tests = executable(
     'src/app-error.vala',
     'src/edit-mode.vala',
     'src/wrap-mode.vala',
-    'src/app-const.vala',
+    'src/app-consts.vala',
     'src/availability.vala',
     'src/hurigana-helper.vala',
     'src/vertical-form-map.vala',
     'src/utf8-utils.vala',
     'src/conv-type.vala',
-    'src/action-type.vala',
-    'src/history-item.vala',
     'src/history.vala',
     'src/simple-list.vala',
+    'src/gee-list-utils.vala',
+    'src/actions/edit-action.vala',
+    'src/actions/abstract-edit-action.vala',
+    'src/actions/insert-text-action.vala',
+    'src/actions/delete-region-action.vala',
     resources
   ],
   dependencies: [
@@ -137,6 +143,7 @@ test('TextModelTests.insert_string_4', text_model_tests, args: ['insert_string_4
 test('TextModelTests.insert_string_5', text_model_tests, args: ['insert_string_5'])
 test('TextModelTests.insert_string_6', text_model_tests, args: ['insert_string_6'])
 test('TextModelTests.insert_string_7', text_model_tests, args: ['insert_string_7'])
+test('TextModelTests.insert_string_8', text_model_tests, args: ['insert_string_8'])
 test('TextModelTests.insert_newline_1', text_model_tests, args: ['insert_newline_1'])
 test('TextModelTests.delete_char_1', text_model_tests, args: ['delete_char_1'])
 test('TextModelTests.delete_char_2', text_model_tests, args: ['delete_char_2'])
@@ -165,7 +172,7 @@ cell_position_tests = executable(
   [
     'test/cell-position-tests.vala',
     'src/cell-position.vala',
-    'src/app-const.vala'
+    'src/app-consts.vala'
   ],
   dependencies: [
     dependency('gtk+-3.0')
@@ -206,7 +213,7 @@ utf8_utils_tests = executable(
   ]
 )
 
-foreach i : range(1, 14)
+foreach i : range(1, 15)
   test('Utf8UtilsTest.@0@'.format(i), utf8_utils_tests, args: [i.to_string()])
 endforeach
 

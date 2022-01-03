@@ -315,13 +315,13 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
 
     private void do_undo() {
         if (genkoyoshi.model.can_undo) {
-            genkoyoshi.model.undo_history();
+            genkoyoshi.model.do_undo();
         }
     }
     
     private void do_redo() {
         if (genkoyoshi.model.can_redo) {
-            genkoyoshi.model.redo_history();
+            genkoyoshi.model.do_redo();
         }
     }
         

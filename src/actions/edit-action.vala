@@ -17,17 +17,8 @@
  * Copyright 2021 Takayuki Tanaka
  */
 
-public class HistoryItem : Object {
-    public ActionType action_type { get; private set; }
-    public CellPosition selection_start { get; private set; }
-    public CellPosition selection_end { get; private set; }
-    public Gee.List<SimpleList<TextElement>>? text { get; private set; }
-    public HistoryItem(ActionType action_type, CellPosition selection_start, CellPosition selection_end,
-            Gee.List<SimpleList<TextElement>>? text) {
-        this.action_type = action_type;
-        this.selection_start = selection_start;
-        this.selection_end = selection_end;
-        this.text = text;
-    }
+public interface EditAction : Object {
+    public abstract Region perform();
+    public abstract Region undo();
+    public abstract Region redo();
 }
-

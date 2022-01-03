@@ -54,7 +54,8 @@ public class TextModel : Object {
     public TextModel() {
         undo_list = new History();
         redo_list = new History();
-        data = construct_text("", DIRECT_INPUT, NOWRAP);
+        data = construct_text("", DIRECT_INPUT, NOWRAP, false);
+        assert(data.size > 0);
     }
 
     /**
@@ -230,7 +231,7 @@ public class TextModel : Object {
      */
     public void set_cursor(CellPosition new_pos) {
         if (edit_mode == PREEDITING) {
-            delete_between(selection);
+            perform_edit_action(delete_region(selection, new_edit_action()));
             end_preedit();
         }
         selection.move_to(new_pos);
@@ -270,12 +271,15 @@ public class TextModel : Object {
         return selection.last;
     }
     
-    public void set_contents(string new_text) {
+    public void set_contents(string? new_text) {
         set_contents_async.begin(new_text);
     }
     
-    public async void set_contents_async(string new_text) {
+    public async void set_contents_async(string? new_text) {
         data.clear();
+        if (new_text == null || new_text.length == 0) {
+            return;
+        }
         string[] lines = new_text.split("\n");
         for (int i = 0; i < lines.length; i++) {
             var text_list = construct_text(lines[i], DIRECT_INPUT, WRAP, true);
@@ -298,22 +302,23 @@ public class TextModel : Object {
         }
         return sb.str;
     }
+
+    /**
+     * テキストを空にする。
+     */
+    public void clear() {
+        select_all();
+        perform_edit_action(delete_region(selection, new_edit_action()));
+    }
     
     /**
      * 選択範囲を文字列形式で取得する。
      */
     public string selection_to_string() {
-        CellPosition p1, p2, p;
-        if (selection.start.comp_lt(selection.last)) {
-            p1 = selection.start;
-            p2 = selection.last;
-        } else {
-            p1 = selection.last;
-            p2 = selection.start;
-        }
-        p = p1;
+        Region region = selection.asc_order();
+        CellPosition p = region.start;
         var sb = new StringBuilder();
-        while (p.comp_le(p2)) {
+        while (p.comp_le(region.last)) {
             if (p.hpos < data.size) {
                 if (p.vpos < data[p.hpos].size) {
                     sb.append(data[p.hpos][p.vpos].str);
@@ -340,8 +345,7 @@ public class TextModel : Object {
         // 挿入するテキストを作成する。
         EditMode tmp = DIRECT_INPUT;
         if (edit_mode == PREEDITING) {
-            selection.start = preedit.start;
-            selection.last = preedit.last;
+            selection = preedit;
             tmp = edit_mode;
         }
         
@@ -350,8 +354,7 @@ public class TextModel : Object {
                 selection.last.hpos, selection.last.vpos);
 
         var new_text = construct_text(src, DIRECT_INPUT, NOWRAP);
-        undo_list.new_action();
-        insert_text(new_text);
+        perform_edit_action(insert_text(new_text, new_edit_action()));
         
         edit_mode = tmp;
         if (edit_mode == PREEDITING) {
@@ -362,93 +365,13 @@ public class TextModel : Object {
     public void insert_newline() {
         debug("is newline");
         var text = construct_text("\n", DIRECT_INPUT, NOWRAP);
-        insert_text(text);
-        undo_list.push_action(INSERT, selection.start, selection.last, text);
+        perform_edit_action(insert_text(text, new_edit_action()));
     }
 
-    public void insert_text(Gee.List<SimpleList<TextElement>> new_piece) {
-        // 選択範囲の二つの点のうち前にあるものをp1、後ろにあるものをp2とする
-        Region region = selection.adjust();
-
-        // 選択範囲内の文字列を削除する。
-        if (!region.start.comp_eq(region.last)) {
-            debug("insert_text go into delete selection");
-            delete_between(selection);
-            debug("insert_text come back from delete selection");
-        }
-        
-        selection.move_to(region.start);
-
-        // 選択範囲の先頭が行末より下にある場合、空白文字で埋める。
-        if (region.start.hpos >= data.size || region.start.vpos >= data[region.start.hpos].size) {
-            pad_space(region.start.hpos, region.start.vpos);
-        }
-        
-        var line = data[region.start.hpos];
-        
-        if (text_is_newline(new_piece)) {
-            debug("insert a newline");
-            // 改行を挿入する
-            if (region.start.vpos < line.size) {
-                var new_line = line.cut_at(region.start.vpos);
-                line.add(new TextElement("\n"));
-                data.insert(region.start.hpos + 1, new_line);
-                CellPosition new_pos = {region.start.hpos + 1, 0};
-                debug("new pos = [%d, %d]", new_pos.hpos, new_pos.vpos);
-                set_cursor(new_pos);
-            } else {
-                CellPosition new_pos = {region.start.hpos + 1, 0};
-                debug("new pos = [%d, %d]", new_pos.hpos, new_pos.vpos);
-                set_cursor(new_pos);
-                pad_space(new_pos.hpos, new_pos.vpos);
-            }
-            return;
-        // 新しい文字列を追加する。
-        } else if (new_piece.size == 1) {
-            debug("insert a single line");
-            // 挿入する文字列が一行の場合は単純に挿入して行折り返し処理をする。
-            int new_piece_size = new_piece[0].size;
-            line.insert_all(region.start.vpos, new_piece[0]);
-            if (data[region.start.hpos].size >= Y_LENGTH) {
-                wrap_line(region.start.hpos);
-            }
-
-            // カーソルを挿入した文字列の末尾の位置に移動する。
-            selection.start = region.start.add_offset(new_piece_size);
-        } else {
-            debug("insert multiple lines");
-            int new_piece_last_size = new_piece.last().size;
-            // 複数行挿入する場合は一行ずつ処理をする。
-            if (region.start.vpos == 0) {
-                if (line.size > 0) {
-                    new_piece.last().concat(line);
-                }
-            } else if (region.start.vpos >= line.size) {
-                new_piece.first().insert_all(0, line);
-            } else {
-                var part1 = line;
-                var part2 = part1.cut_at(region.start.vpos);
-                new_piece[0].insert_all(0, part1);
-                new_piece.last().concat(part2);
-            }
-
-            data.remove_at(region.start.hpos);
-
-            int n_lines = 0;
-            for (int i = new_piece.size - 1; i >= 0; i--) {
-                data.insert(region.start.hpos, new_piece[i]);
-                n_lines += wrap_line(region.start.hpos);
-            }
-
-            // カーソルを挿入した文字列の末尾の位置に移動する。
-            selection.start = {
-                region.start.hpos + n_lines,
-                new_piece_last_size % Y_LENGTH
-            };
-        }
-        
-        selection.last = selection.start;
-        cursor_moved(selection.last);
+    private Gee.LinkedList<EditAction> insert_text(Gee.List<SimpleList<TextElement>> new_piece,
+            Gee.LinkedList<EditAction> action_list) {
+        action_list.add(new InsertTextAction(data, selection, new_piece, edit_mode));
+        return action_list;
     }
     
     /**
@@ -481,8 +404,7 @@ public class TextModel : Object {
             return;
         }
 
-        selection.start = preedit.start;
-        selection.last = preedit.last;
+        selection = preedit;
         debug("preedit_changed (%s) at [[%d, %d], [%d, %d]]\n",
                 preedit_string, selection.start.hpos, selection.start.vpos,
                 selection.last.hpos, selection.last.vpos);
@@ -490,11 +412,10 @@ public class TextModel : Object {
         var preedit_text = construct_text(preedit_string, PREEDITING, NOWRAP);
         var preedit_size = preedit_text[0].size;
 
-        insert_text(preedit_text);
+        perform_edit_action(insert_text(preedit_text, new_edit_action()));
         
         preedit.last = preedit.start.add_offset(preedit_size);
-        selection.start = preedit.start;
-        selection.last = preedit.last;
+        selection = preedit;
         cursor_moved(preedit.last);
     }
 
@@ -502,8 +423,7 @@ public class TextModel : Object {
      * 文字を削除する。
      */
     public void delete_char() {
-        delete_between(selection);
-        cursor_moved(selection.last);
+        perform_edit_action(delete_region(selection, new_edit_action()));
     }
     
     /**
@@ -539,104 +459,55 @@ public class TextModel : Object {
         }
         debug("delete at [[%d, %d], [%d, %d]]\n",
                 selection.start.hpos, selection.start.vpos, selection.last.hpos, selection.last.vpos);
-        delete_between(selection);
-        cursor_moved(selection.start);
-    }
-    
-    /**
-     * 行の折り返し処理を行う。
-     * 折り返した結果の行数を返す。
-     * 行が空行の場合、1を返す。
-     * 行の長さが20文字以下の場合も1を返す。
-     * 一回行送りがあると2を返す。以下同順。
-     */
-    public int wrap_line(int x) {
-        // xが全ての行数より大きい場合は何もしない。0を返す。
-        if (data.size <= x) {
-            return 0;
-        }
-
-        // x行目の長さが0の場合、その行を削除する。(ただし最初の行しか残っていない場合は何もしない)
-        if (data[x].size == 0) {
-            if (data.size == 1 && x == 0) {
-                return 0;
-            } else if (x == data.size - 1) {
-                return 0;
-            } else {
-                data.remove_at(x);
-                return 0;
-            }
-        }
-
-        // x行目の長さが20文字以内、かつ行末が'\n'の場合は何もしない。        
-        if (data[x].size < Y_LENGTH && data[x].get_last().str == "\n") {
-            return 0;
-        }
-
-        // x行目の行末が'\n'以外の場合はラップ処理を行う。
-        var line = new SimpleList<TextElement>();
-        line.concat(data[x]);
-        data.remove_at(x);
-
-        // x行目に続く行を末尾が'\n'になるまで新しく作成したリストに追加し、一列にする。
-        while (x < data.size && line.get_last().str != "\n") {
-            line.concat(data[x]);
-            // 取り込んだ行は削除する。
-            data.remove_at(x);
-        }
-
-        int result = 0;
-        
-        // 新しく作成したリストが20文字を超える場合
-        if (line.size >= Y_LENGTH) {
-            // 20文字で区切って挿入していく
-            var part1 = line;
-            var part2 = part1.cut_at(Y_LENGTH);
-            data.insert(x, part1);
-            int i = 1;
-            
-            // 以降20文字ずつに区切って挿入を繰り返す。
-            while (part2.size >= Y_LENGTH) {
-                part1 = part2;
-                part2 = part1.cut_at(Y_LENGTH);
-                data.insert(x + i, part1);
-                i++;
-            }
-            if (part2.is_empty()) {
-                result = i;
-            } else {
-                data.insert(x + i, part2);
-                result = i + 1;
-            }
-        } else {
-            // 新しい行が改行含めて20文字以内に収まる場合は挿入して終わり。
-            data.insert(x, line);
-            result = 0;
-        }
-        return result;
+        perform_edit_action(delete_region(selection, new_edit_action()));
     }
 
     /**
      * 選択範囲を削除する。
      */
     public void delete_selection() {
-        delete_between(selection);
-        cursor_moved(selection.last);
+        perform_edit_action(delete_region(selection, new_edit_action()));
     }
 
+    /**
+     * テキスト編集処理の実行を行う
+     */
+    public void perform_edit_action(Gee.List<EditAction> action_list) {
+        foreach (var action in action_list) {
+            selection = action.perform();
+        }
+        cursor_moved(selection.last);
+    }
     
     /**
      * アンドゥ処理を行う。
      */
-    public void undo_history() {
+    public void do_undo() {
+        var action_list = undo_list.pop_action();
+        foreach_reverse<EditAction>(action_list, (action) => {
+            selection = action.undo();
+        });
+        redo_list.push_action(action_list);
+        cursor_moved(selection.last);
     }
     
     /**
      * リドゥ処理を行う。
      */
-    public void redo_history() {
+    public void do_redo() {
+        var action_list = redo_list.pop_action();
+        foreach(var action in action_list) {
+            selection = action.redo();
+        }
+        undo_list.push_action(action_list);
+        cursor_moved(selection.last);
     }
 
+    public Gee.LinkedList<EditAction> new_edit_action() {
+        redo_list.clear();
+        return undo_list.new_edit_action();
+    }
+    
     /**
      * 「全て選択」を行う。
      */
@@ -661,84 +532,9 @@ public class TextModel : Object {
      * 二つのポジションが同じ位置である場合、一つの文字のみ削除する。
      * 二つのポジションが最終行以降にある場合、何もしない。
      */
-    private void delete_between(Region region) {
-        // 選択範囲の二つの点のうち前にあるものをregion.start、後ろにあるものをregion.lastとする
-        region = region.adjust();
-        CellPosition p3 = region.last.add_offset(1);
-        
-        if (region.start.hpos >= data.size) {
-            // 選択範囲が最終行以後にある場合は何もせず終了する。
-            return;
-        }
-
-        //undo_list.start();
-        if (region.start.comp_eq(region.last)) {
-            var line = data[region.start.hpos];
-            if (region.start.vpos < line.size) {
-                // カーソルが行の末尾より下にある場合は何もしないようにする。
-                if (line.size == 1 && region.start.hpos > 0) {
-                    // 削除するのが行の最後の文字である場合はその行ごと削除する。
-                    data.remove_at(region.start.hpos);
-                } else {
-                    // カーソル位置の文字を削除する。
-                    line.remove_at(region.start.vpos);
-                }
-            }
-        } else if (region.start.hpos == region.last.hpos) {
-            // region.startとregion.lastが同じ行にある場合
-            var line = data[region.start.hpos];
-            if (region.start.vpos == 0 && region.last.vpos >= line.size - 1) {
-                if (data.size == 1 && region.start.hpos == 0) {
-                    line.clear();
-                } else {
-                    data.remove(line);
-                }
-            } else if (region.start.vpos < line.size) {
-                if (edit_mode == DIRECT_INPUT) {
-                    region.last.self_add_offset(1);
-                }
-                line.slice_cut(region.start.vpos, region.last.vpos);
-            }
-            //undo_list.put(DELETE, piece);
-        } else {
-            // region.startとregion.lastが違う行にある場合
-            var line1 = data[region.start.hpos];
-            if (region.start.vpos >= line1.size) {
-                region.start  = {region.start.hpos + 1, 0};
-                if (region.start.hpos >= data.size) {
-                    return;
-                } else if (region.start.comp_eq(region.last)) {
-                    delete_between(region);
-                    return;
-                }
-            }
-            // 選択範囲の前の部分に選択範囲の後ろの部分を追加する。
-            var part1 = line1;
-            var part2 = part1.cut_at(region.start.vpos);
-            var p4 = region.last;
-            if (edit_mode == DIRECT_INPUT) {
-                p4 = p3;
-            }
-            if (p4.hpos < data.size) {
-                var line2 = data[p4.hpos];
-                if (p4.vpos < line2.size) {
-                    var part3 = line2;
-                    var part4 = part3.cut_at(p4.vpos);
-                    part1.concat(part4);
-                }
-            }
-            // 選択範囲の開始と終了の間の行を削除する。
-            for (int i = region.start.hpos; i <= p4.hpos && region.start.hpos < data.size; i++) {
-                //undo_list.put(DELETE, data[region.start.hpos]);
-                data.remove_at(region.start.hpos);
-            }
-            // 切り取り後の行を挿入する。
-            data.insert(region.start.hpos, part1);
-        }
-        //undo_list.finish();
-        // 行送りを調整する。
-        wrap_line(region.start.hpos);
-        selection.move_to(region.start);
+    private Gee.LinkedList<EditAction> delete_region(Region region, Gee.LinkedList<EditAction> action_list) {
+        action_list.add(new DeleteRegionAction(data, region, edit_mode));
+        return action_list;
     }
 
     /**
@@ -746,16 +542,14 @@ public class TextModel : Object {
      * 元となる文字列をUTF-8の方式で一文字ずつ分解してTextElementのリストを作る。
      * 改行を含む場合は複数行を作成する。
      */
-    private Gee.List<SimpleList<TextElement>> construct_text(string src, EditMode arg_edit_mode = DIRECT_INPUT, WrapMode wrap_mode = NOWRAP,
+    private static Gee.List<SimpleList<TextElement>> construct_text(string src,
+            EditMode arg_edit_mode = DIRECT_INPUT, WrapMode wrap_mode = NOWRAP,
             bool has_hurigana = false) {
         var result = new Gee.ArrayList<SimpleList<TextElement>>();
         var line = new SimpleList<TextElement>();
         result.add(line);
-        if (src.length == 0) {
-            return result;
-        }
         int offset = 0;
-        while (src[offset] != '\0') {
+        while (offset < src.length) {
             bool is_normal_text = true;
             int substr_length = 0;
             char atp = src[offset]; // "atp" means "tha char At This Point"
@@ -797,50 +591,8 @@ public class TextModel : Object {
                 result.add(line);
             }
         }
+        assert(result.size > 0);
         return result;
-    }
-    
-    private bool text_is_newline(Gee.List<SimpleList<TextElement>>? text) {
-        if (text != null && text.size == 2 && text[0].size == 1 && text[0][0].str == "\n" && text[1].size == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * カーソル位置まで空白か改行文字で埋める。
-     * カーソル位置が既存行の末尾以下にある場合は空白で埋める。
-     * カーソル位置が最終行より後ろにある場合は改行で埋める。
-     */
-    private void pad_space(int hpos, int vpos) {
-        if (data.size <= hpos) {
-            var last_line = data.last();
-            if (last_line.size == 0 || (last_line.size < (Y_LENGTH - 1) && last_line.get_last().str != "\n")) {
-                last_line.add(new TextElement("\n"));
-            }
-            while (data.size <= hpos) {
-                var new_line = new SimpleList<TextElement>();
-                if (data.size < hpos) {
-                    new_line.add(new TextElement("\n"));
-                }
-                data.add(new_line);
-            }
-        }
-        var line = data[hpos];
-        if (line.size > 0 && line.get_last().str == "\n") {
-            while (line.size <= vpos) {
-                // 全角空白を追加する。
-                var space = new TextElement("　");
-                line.insert(line.size - 1, space);
-            }
-        } else {
-            while (line.size < vpos) {
-                // 全角空白を追加する。
-                var space = new TextElement("　");
-                line.add(space);
-            }
-        }
     }
     
     /**

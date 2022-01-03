@@ -271,8 +271,11 @@ public class SimpleList<T> : Object {
     public SimpleList<T> slice_copy(int start_index, int end_index) {
         int size_value = size;
         return_if_fail(start_index <= end_index);
-        return_if_fail(start_index < size_value);
         SimpleList<T> list = new SimpleList<T>();
+        if (size_value == 0) {
+            return list;
+        }
+        return_if_fail(start_index < size_value);
         if (end_index >= size_value) {
             end_index = size_value;
         }

@@ -1,49 +1,52 @@
+/*
+ * This file is part of GenkoYoshi.
+ *
+ *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright 2021 Takayuki Tanaka
+ */
+
 public class History : Object {
-    private Gee.Deque<Gee.Deque<HistoryItem>> data;
+    private Gee.Deque<Gee.LinkedList<EditAction>> data;
     
     public History() {
-        data = new Gee.ArrayQueue<Gee.Deque<HistoryItem>>();
+        data = new Gee.ArrayQueue<Gee.LinkedList<EditAction>>();
     }
     
     public bool has_history() {
         return data.size > 0;
     }
     
-    public void new_action() {
-        data.offer_head(new Gee.ArrayQueue<HistoryItem>());
-    }
-    
-    public void push_action(ActionType type, CellPosition selection_start, CellPosition selection_end, Gee.List<SimpleList<TextElement>> text) {
-        data.peek_head().offer_head(new HistoryItem(type, selection_start, selection_end, text));
+    public Gee.LinkedList<EditAction> new_edit_action() {
+        var new_action_list = new Gee.LinkedList<EditAction>();
+        data.offer_tail(new_action_list);
+        return new_action_list;
     }
 
-    public Gee.Deque<HistoryItem> pop_action() {
-        return data.poll_head();
+    public Gee.LinkedList<EditAction> get_last_action() {
+        return data.peek_tail();
     }
-    
-    public void append_line(SimpleList<TextElement> text_line) {
-        var list = new Gee.ArrayList<SimpleList<TextElement>>();
-        //list.add(text_line.copy_all());
-        data.poll_head().offer_head(new HistoryItem(APPEND_LINE, {-1, -1}, {-1, -1}, list));
-    }
-    
-    public bool next() {
-        if (data.size > 0 && data.peek_head().size > 0) {
-            return true;
-        } else {
-            if (data.size > 0) {
-                data.poll_head();
-            }
-            return false;
-        }
-    }
-    
-    public new HistoryItem get() {
-        return data.peek_head().poll_head();
+        
+    public void push_action(Gee.LinkedList<EditAction> action_list) {
+        data.offer_tail(action_list);
     }
 
-    public void retrieve_one_action(History other_history)
-      requires (other_history.has_history()) {
-        data.offer_head(other_history.pop_action());
+    public Gee.LinkedList<EditAction> pop_action() {
+        return data.poll_tail();
+    }
+    
+    public void clear() {
+        data.clear();
     }
 }

@@ -11,7 +11,7 @@ int main(string[] argv) {
         main_loop.quit();
     });
     main_loop.run();
-    return 0;
+    return result_code;
 }
 
 async int select_test(string test_name) {
@@ -61,7 +61,13 @@ async int select_test(string test_name) {
                 4);
       
       case "insert_string_1":
-        return yield test_insert_string("おはようございます。", {0, 4}, "、", "おはよう、ございます。", 1, 1);
+        return yield test_insert_string(
+                "おはようございます。",
+                {0, 4},
+                "、",
+                "おはよう、ございます。",
+                1,
+                1);
 
       case "insert_string_2":
         return yield test_insert_string(
@@ -120,7 +126,16 @@ async int select_test(string test_name) {
                 "ああああああいいいいいいうううううええええええう",
                 1,
                 2);
-            
+      
+      case "insert_string_8":
+        return yield test_insert_string(
+                "",
+                {0, 0},
+                "あ",
+                "あ",
+                1,
+                1);
+
       case "delete_char_1":
         return yield test_delete_char(
                 "ああああああああああいいいいいいいいいいうううううううううう\n"
@@ -279,7 +294,7 @@ async int select_test(string test_name) {
         return yield test_delete_selection(
                 "ああああああいいいいいいうううううう",
                 {{0, 6}, {0, 12}},
-                "ああああああうううううう",
+                "ああああああううううう",
                 1,
                 1);
         
@@ -335,7 +350,7 @@ async int select_test(string test_name) {
 async int test_construct_text(string src_text, int expect_length, int expect_lines, int expect_visible_lines) {
     var model = new TextModel();
     yield model.set_contents_async(src_text);
-    debug("%s\n", model.get_contents());
+    model.analyze_all_lines("result:");
     print("length: expect = %d, actual = %d\n", expect_length, model.count_chars());
     assert(model.count_chars() == expect_length);
     print("lines: expect = %d, actual = %d\n", expect_lines, model.count_lines());
@@ -367,9 +382,12 @@ async int test_count_visible_lines(string text, int expect) {
     return 0;
 }
 
-async int test_insert_string(string text, CellPosition pos, string new_text, string expect, int expect_lines, int expect_visible_lines) {
+async int test_insert_string(string? text, CellPosition pos, string new_text, string expect, int expect_lines, int expect_visible_lines) {
     var model = new TextModel();
-    yield model.set_contents_async(text);
+    if (text != null && text != "") {
+        yield model.set_contents_async(text);
+    }
+    model.analyze_all_lines("Initial state: ");
     model.set_cursor(pos);
     model.insert_string(new_text);
     string result = model.get_contents();
@@ -407,7 +425,9 @@ async int test_delete_char(string text, CellPosition pos, string expect, int exp
     var model = new TextModel();
     yield model.set_contents_async(text);
     model.set_cursor(pos);
+    model.analyze_all_lines("Before:");
     model.delete_char();
+    model.analyze_all_lines("After:");
     string result = model.get_contents();
     print("result: %s\nexpect: %s\n", result, expect);
     assert(result == expect);
