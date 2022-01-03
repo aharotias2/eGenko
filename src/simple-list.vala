@@ -138,11 +138,8 @@ public class SimpleList<T> : Object {
 
     public void insert(int index, T new_data) {
         if (root == null) {
-            if (index == 0) {
-                root = new Element<T>() { data = new_data };
-            } else {
-                assert(index > 0);
-            }
+            warn_if_fail (index == 0);
+            root = new Element<T>() { data = new_data };
         } else {
             if (index == 0) {
                 Element<T> e = new Element<T>() { data = new_data };
@@ -159,6 +156,7 @@ public class SimpleList<T> : Object {
                 e.next = new_elem;
                 new_elem.prev = e;
             } else {
+                warn_if_fail(index > size);
                 add(new_data);
             }
         }
@@ -197,7 +195,8 @@ public class SimpleList<T> : Object {
     }
 
     public T? remove_at(int index) {
-        assert(root != null);
+        return_if_fail(root != null);
+        return_if_fail(index < size);
         if (index == 0) {
             if (root.next != null) {
                 Element<T> e1 = root.next;

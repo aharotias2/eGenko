@@ -23,7 +23,7 @@
  */
 public class TextModel : Object {
     // シグナル
-    
+
     public signal void cursor_moved(CellPosition cursor_position);
     public signal void changed();
 
@@ -32,21 +32,21 @@ public class TextModel : Object {
     public EditMode edit_mode { get; private set; default = DIRECT_INPUT; }
 
     public Availability hurigana_mode { get; set; default = ENABLED; }
-    
+
     public bool can_undo { get { return undo_list.has_history(); } }
-    
+
     public bool can_redo { get { return redo_list.has_history(); } }
-    
+
     // プライベートフィールド
-        
+
     private Gee.List<SimpleList<TextElement>> data;
     private Region selection = {{0, 0}, {0, 0}};
     private Region preedit = {{-1, -1}, {-1, -1}};
     private History undo_list;
     private History redo_list;
-    
+
     // パブリックメソッド
-    
+
     /**
      * デフォルトのコンストラクタ。
      * 空のテキストを作成して保持する。
@@ -65,6 +65,8 @@ public class TextModel : Object {
     public TextModel.from_string(string src) {
         set_contents(src);
     }
+
+    // ステータス関連
 
     /**
      * 行数を数える。ただし見えている行数なので一行の上限は20文字までとなる。
@@ -90,11 +92,11 @@ public class TextModel : Object {
 
     /**
      * ページ数を数える。
-     */    
+     */
     public int count_pages() {
         return data.size / X_LENGTH + 1;
     }
-    
+
     /**
      * 全ての文字数を数える。
      * UTF-8での数え方なのでバイト数ではない。
@@ -126,7 +128,9 @@ public class TextModel : Object {
     public bool is_in_selection(CellPosition pos) {
         return pos in selection;
     }
-    
+
+    // カーソル関連
+
     /**
      * offsetで指定した文字数分、カーソルを前方に移動する。
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
@@ -138,7 +142,7 @@ public class TextModel : Object {
         }
         cursor_moved(selection.last);
     }
-    
+
     /**
      * offsetで指定した文字数分、カーソルを後方に移動する。
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
@@ -174,7 +178,7 @@ public class TextModel : Object {
         }
         cursor_moved(selection.last);
     }
-    
+
     /**
      * カーソルを左のセルに移動する。
      * is_shift_maskedがtrueの場合、カーソルの代わりに選択範囲の末尾を移動する。
@@ -231,22 +235,23 @@ public class TextModel : Object {
      */
     public void set_cursor(CellPosition new_pos) {
         if (edit_mode == PREEDITING) {
-            perform_edit_action(delete_region(selection, new_edit_action()));
+            var action_list = begin_new_edit_action();
+            delete_region(selection, action_list);
             end_preedit();
         }
         selection.move_to(new_pos);
         cursor_moved(selection.last);
     }
-    
+
     public Region get_selection() {
         return selection;
     }
-    
+
     public void set_selection(Region selection) {
         this.selection = selection;
         cursor_moved(selection.last);
     }
-    
+
     /**
      * 選択範囲の始点を設定する。
      */
@@ -258,7 +263,7 @@ public class TextModel : Object {
     public CellPosition get_selection_start() {
         return selection.start;
     }
-    
+
     /**
      * 選択範囲の終点を設定する。
      */
@@ -270,11 +275,13 @@ public class TextModel : Object {
     public CellPosition get_selection_last() {
         return selection.last;
     }
-    
+
+    // 編集関連
+
     public void set_contents(string? new_text) {
         set_contents_async.begin(new_text);
     }
-    
+
     public async void set_contents_async(string? new_text) {
         data.clear();
         if (new_text == null || new_text.length == 0) {
@@ -292,7 +299,7 @@ public class TextModel : Object {
         }
         changed();
     }
-    
+
     public string get_contents() {
         StringBuilder sb = new StringBuilder();
         foreach (var visible_line in data) {
@@ -308,9 +315,11 @@ public class TextModel : Object {
      */
     public void clear() {
         select_all();
-        perform_edit_action(delete_region(selection, new_edit_action()));
+        var action_list = begin_new_edit_action();
+        delete_region(selection, action_list);
+        cursor_moved(selection.last);
     }
-    
+
     /**
      * 選択範囲を文字列形式で取得する。
      */
@@ -333,7 +342,7 @@ public class TextModel : Object {
         }
         return sb.str;
     }
-    
+
     /**
      * 文字列を挿入する。
      *
@@ -348,14 +357,16 @@ public class TextModel : Object {
             selection = preedit;
             tmp = edit_mode;
         }
-        
+
         debug("insert_string (%s) at [[%d, %d], [%d, %d]]\n",
                 src, selection.start.hpos, selection.start.vpos,
                 selection.last.hpos, selection.last.vpos);
 
         var new_text = construct_text(src, DIRECT_INPUT, NOWRAP);
-        perform_edit_action(insert_text(new_text, new_edit_action()));
-        
+        var action_list = begin_new_edit_action();
+        insert_text(new_text, action_list);
+        cursor_moved(selection.last);
+
         edit_mode = tmp;
         if (edit_mode == PREEDITING) {
             start_preedit();
@@ -365,15 +376,11 @@ public class TextModel : Object {
     public void insert_newline() {
         debug("is newline");
         var text = construct_text("\n", DIRECT_INPUT, NOWRAP);
-        perform_edit_action(insert_text(text, new_edit_action()));
+        var action_list = begin_new_edit_action();
+        insert_text(text, action_list);
+        cursor_moved(selection.last);
     }
 
-    private Gee.LinkedList<EditAction> insert_text(Gee.List<SimpleList<TextElement>> new_piece,
-            Gee.LinkedList<EditAction> action_list) {
-        action_list.add(new InsertTextAction(data, selection, new_piece, edit_mode));
-        return action_list;
-    }
-    
     /**
      * プリエディットの開始時の処理。
      * プリエディットの範囲を選択範囲の開始点と同じにする。
@@ -412,8 +419,9 @@ public class TextModel : Object {
         var preedit_text = construct_text(preedit_string, PREEDITING, NOWRAP);
         var preedit_size = preedit_text[0].size;
 
-        perform_edit_action(insert_text(preedit_text, new_edit_action()));
-        
+        var action_list = begin_new_edit_action();
+        insert_text(preedit_text, action_list);
+
         preedit.last = preedit.start.add_offset(preedit_size);
         selection = preedit;
         cursor_moved(preedit.last);
@@ -423,9 +431,11 @@ public class TextModel : Object {
      * 文字を削除する。
      */
     public void delete_char() {
-        perform_edit_action(delete_region(selection, new_edit_action()));
+        var action_list = begin_new_edit_action();
+        delete_region(selection, action_list);
+        cursor_moved(selection.last);
     }
-    
+
     /**
      * 文字を削除する。(バックスペース処理)
      */
@@ -459,26 +469,20 @@ public class TextModel : Object {
         }
         debug("delete at [[%d, %d], [%d, %d]]\n",
                 selection.start.hpos, selection.start.vpos, selection.last.hpos, selection.last.vpos);
-        perform_edit_action(delete_region(selection, new_edit_action()));
+        var action_list = begin_new_edit_action();
+        delete_region(selection, action_list);
+        cursor_moved(selection.last);
     }
 
     /**
      * 選択範囲を削除する。
      */
     public void delete_selection() {
-        perform_edit_action(delete_region(selection, new_edit_action()));
-    }
-
-    /**
-     * テキスト編集処理の実行を行う
-     */
-    public void perform_edit_action(Gee.List<EditAction> action_list) {
-        foreach (var action in action_list) {
-            selection = action.perform();
-        }
+        var action_list = begin_new_edit_action();
+        delete_region(selection, action_list);
         cursor_moved(selection.last);
     }
-    
+
     /**
      * アンドゥ処理を行う。
      */
@@ -490,7 +494,7 @@ public class TextModel : Object {
         redo_list.push_action(action_list);
         cursor_moved(selection.last);
     }
-    
+
     /**
      * リドゥ処理を行う。
      */
@@ -503,7 +507,7 @@ public class TextModel : Object {
         cursor_moved(selection.last);
     }
 
-    public Gee.LinkedList<EditAction> new_edit_action() {
+    public Gee.LinkedList<EditAction> begin_new_edit_action() {
         redo_list.clear();
         return undo_list.new_edit_action();
     }
@@ -524,17 +528,27 @@ public class TextModel : Object {
         }
         cursor_moved(selection.last);
     }
-    
+
     // プライベートメソッド
-        
+
+    /**
+     * 選択範囲にあるテキストを削除し、その代わりに新たなテキストを挿入する。
+     */
+    private void insert_text(Gee.List<SimpleList<TextElement>> new_piece, Gee.List<EditAction> action_list) {
+        var insert_text_action = new InsertTextAction(data, selection, new_piece, edit_mode);
+        selection = insert_text_action.perform();
+        action_list.add(insert_text_action);
+    }
+
     /**
      * 二つのポジションの間にある文字を削除する。
      * 二つのポジションが同じ位置である場合、一つの文字のみ削除する。
      * 二つのポジションが最終行以降にある場合、何もしない。
      */
-    private Gee.LinkedList<EditAction> delete_region(Region region, Gee.LinkedList<EditAction> action_list) {
-        action_list.add(new DeleteRegionAction(data, region, edit_mode));
-        return action_list;
+    private void delete_region(Region region, Gee.List<EditAction> action_list) {
+        var delete_region_action = new DeleteRegionAction(data, region, edit_mode);
+        selection = delete_region_action.perform();
+        action_list.add(delete_region_action);
     }
 
     /**
@@ -594,7 +608,7 @@ public class TextModel : Object {
         assert(result.size > 0);
         return result;
     }
-    
+
     /**
      * デバッグ用のメソッド。
      * 一行分のテキストの内容をデバッグ表示する。
@@ -624,7 +638,7 @@ public class TextModel : Object {
             debug(sb.str);
         }
     }
-    
+
     public void analyze_all_lines(string message) {
         debug(message);
         foreach (var line in data) {

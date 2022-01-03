@@ -21,8 +21,6 @@ public class InsertTextAction : AbstractEditAction {
     private unowned Gee.List<SimpleList<TextElement>> text;
     private Region before_selection;
     private Region after_selection;
-    private Region before_local_selection;
-    private Region after_local_selection;
     private Region before_paragraph_region;
     private Region after_paragraph_region;
     private Gee.List<SimpleList<TextElement>> before_text;
@@ -33,10 +31,10 @@ public class InsertTextAction : AbstractEditAction {
         this.text = text;
         this.before_selection = selection;
         before_paragraph_region = paragraph_containing_region(this.text, before_selection);
-        before_local_selection = selection.subtract_hpos(before_paragraph_region.start.hpos);
+        var before_local_selection = selection.subtract_hpos(before_paragraph_region.start.hpos);
         before_text = copy_paragraphs(this.text, before_paragraph_region);
         after_text = text_copy_all(before_text);
-        after_local_selection = insert_text(after_text, before_local_selection, text_piece, edit_mode);
+        var after_local_selection = insert_text(after_text, before_local_selection, text_piece, edit_mode);
         after_selection = after_local_selection.add_hpos(before_paragraph_region.start.hpos);
         after_paragraph_region = {
             {before_paragraph_region.start.hpos, 0},

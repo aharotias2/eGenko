@@ -62,10 +62,11 @@ int main(string[] args) {
             print("Expect assertion will fail\n");
             SimpleList<int> list = new SimpleList<int>.from_data(1, 2, 3);
             list.insert(4, 4);
-            assert(list.size == 3);
+            assert(list.size == 4);
             assert(list[0] == 1);
             assert(list[1] == 2);
             assert(list[2] == 3);
+            assert(list[3] == 4);
         }
         break;
       case 7:
@@ -416,8 +417,16 @@ int main(string[] args) {
         break;
       case 32:
         {
+            print("Expect assertion will fail\n");
             SimpleList<int> list1 = new SimpleList<int>.from_data(1, 2, 3, 4, 5, 6);
             list1.remove_at(6);
+            assert(list1.size == 6);
+            assert(list1[0] == 1);
+            assert(list1[1] == 2);
+            assert(list1[2] == 3);
+            assert(list1[3] == 4);
+            assert(list1[4] == 5);
+            assert(list1[5] == 6);
         }
         break;
       case 33:

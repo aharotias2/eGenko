@@ -65,7 +65,7 @@ public struct Region {
             return start.comp_eq(pos);
         } else {
             Region reg = asc_order();
-            return reg.start.comp_lt(pos) && reg.last.comp_ge(pos);
+            return reg.start.comp_le(pos) && reg.last.comp_ge(pos);
         }
     }
 }
