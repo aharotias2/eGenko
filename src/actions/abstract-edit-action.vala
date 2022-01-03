@@ -99,12 +99,15 @@ public abstract class AbstractEditAction : EditAction, Object {
                 text.insert(region.start.hpos + 1, new_line);
                 CellPosition new_pos = {region.start.hpos + 1, 0};
                 debug("new pos = [%d, %d]", new_pos.hpos, new_pos.vpos);
+                wrap_line(text, new_pos.hpos);
                 region.move_to(new_pos);
             } else {
+                line.add(new TextElement("\n"));
                 CellPosition new_pos = {region.start.hpos + 1, 0};
                 debug("new pos = [%d, %d]", new_pos.hpos, new_pos.vpos);
                 region.move_to(new_pos);
                 pad_space(text, new_pos);
+                wrap_line(text, new_pos.hpos);
             }
             return region;
         // 新しい文字列を追加する。
