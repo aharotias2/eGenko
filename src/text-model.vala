@@ -458,14 +458,12 @@ public class TextModel : Object {
             selection.start.self_subtract_offset(1);
             if (selection.start.hpos >= data.size) {
                 // カーソルが文書全体より後ろにある場合、カーソルを文書の最後の位置に動かして終了する
-                selection.start.hpos = data.size - 1;
-                selection.start.vpos = data[selection.start.hpos].size;
-                selection.last = selection.start;
+                selection.move_to({data.size - 1, data.last().size});
                 cursor_moved(selection.start);
                 return;
             } else if (selection.start.vpos >= data[selection.start.hpos].size) {
                 // カーソルが行末より下にある場合行末に移動する。
-                selection.start.vpos = data[selection.start.hpos].size - 1;
+                selection.move_to({selection.start.hpos, data[selection.start.hpos].size - 1});
             }
             selection.last = selection.start;
         }
