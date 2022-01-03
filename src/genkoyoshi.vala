@@ -77,6 +77,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
             });
             model_value.cursor_moved.connect((cursor_position) => {
                 int new_page = cursor_position.hpos / X_LENGTH;
+                set_preedit_location();
                 debug("cursor_moved to {%d, %d}", cursor_position.hpos, cursor_position.vpos);
                 if (new_page != page) {
                     page = new_page;
@@ -691,5 +692,19 @@ public class GenkoYoshi : Gtk.DrawingArea {
             }
         }
         return true;
+    }
+    
+    private void set_preedit_location() {
+        var region = model.get_selection();
+        var pixel_position = position[region.start.hpos, region.start.vpos];
+        debug("set_preedit_location: [%d, %d, %d, %d]",
+                pixel_position.x, pixel_position.y, cell_width, cell_width);
+        var rect = Gdk.Rectangle() {
+            x = pixel_position.x,
+            y = pixel_position.y,
+            width = cell_width,
+            height = cell_width
+        };
+        im.set_cursor_location(rect);
     }
 }

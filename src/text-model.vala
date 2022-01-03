@@ -44,6 +44,7 @@ public class TextModel : Object {
     private Region preedit = {{-1, -1}, {-1, -1}};
     private History undo_list;
     private History redo_list;
+    private Gee.LinkedList<EditAction>? preedit_action_list;
 
     // パブリックメソッド
 
@@ -363,13 +364,13 @@ public class TextModel : Object {
                 selection.last.hpos, selection.last.vpos);
 
         var new_text = construct_text(src, DIRECT_INPUT, NOWRAP);
-        var action_list = begin_new_edit_action();
+        var action_list = edit_mode == PREEDITING ? preedit_action_list : begin_new_edit_action();
         insert_text(new_text, action_list);
         cursor_moved(selection.last);
 
         edit_mode = tmp;
         if (edit_mode == PREEDITING) {
-            start_preedit();
+            preedit.move_to(selection.start);
         }
     }
 
@@ -387,6 +388,7 @@ public class TextModel : Object {
      */
     public void start_preedit() {
         debug("start_preedit");
+        preedit_action_list = begin_new_edit_action();
         preedit.move_to(selection.start);
         edit_mode = PREEDITING;
     }
@@ -397,6 +399,7 @@ public class TextModel : Object {
      */
     public void end_preedit() {
         debug("end_preedit");
+        preedit_action_list = null;
         preedit.move_to({ -1, -1 });
         edit_mode = DIRECT_INPUT;
     }
@@ -419,9 +422,8 @@ public class TextModel : Object {
         var preedit_text = construct_text(preedit_string, PREEDITING, NOWRAP);
         var preedit_size = preedit_text[0].size;
 
-        var action_list = begin_new_edit_action();
-        insert_text(preedit_text, action_list);
-
+        //var action_list = begin_new_edit_action();
+        insert_text(preedit_text, preedit_action_list);
         preedit.last = preedit.start.add_offset(preedit_size);
         selection = preedit;
         cursor_moved(preedit.last);
@@ -511,7 +513,7 @@ public class TextModel : Object {
         redo_list.clear();
         return undo_list.new_edit_action();
     }
-    
+
     /**
      * 「全て選択」を行う。
      */
