@@ -289,7 +289,7 @@ public class TextModel : Object {
             return;
         }
         string[] lines = new_text.split("\n");
-        int limit_lines = 20;
+        int limit_lines = X_LENGTH;
         for (int i = 0; i < lines.length; i++) {
             var text_list = construct_text(lines[i], DIRECT_INPUT, WRAP, true);
             if (i < lines.length - 1) {
