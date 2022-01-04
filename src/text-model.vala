@@ -289,14 +289,19 @@ public class TextModel : Object {
             return;
         }
         string[] lines = new_text.split("\n");
+        int limit_lines = 20;
         for (int i = 0; i < lines.length; i++) {
             var text_list = construct_text(lines[i], DIRECT_INPUT, WRAP, true);
             if (i < lines.length - 1) {
                 text_list.last().add(new TextElement("\n"));
             }
             data.add_all(text_list);
-            Idle.add(set_contents_async.callback);
-            yield;
+            int visible_lines = count_visible_lines();
+            if (visible_lines > limit_lines) {
+                limit_lines = X_LENGTH * ((visible_lines / X_LENGTH) + 1);
+                Idle.add(set_contents_async.callback);
+                yield;
+            }
         }
         changed();
     }
