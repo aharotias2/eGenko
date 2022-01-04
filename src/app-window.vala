@@ -241,13 +241,10 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
             int res = dialog.run();
             if (res == Gtk.ResponseType.ACCEPT) {
                 string filename = dialog.get_filename();
-                string new_text;
                 File file = File.new_for_path(filename);
                 FileInfo info = file.query_info("standard::*", 0);
                 if (info.get_content_type().has_prefix("text/")) {
-                    FileUtils.get_contents(filename, out new_text);
-                    print("contents: %s\n", new_text.substring(0, 100));
-                    genkoyoshi.model.set_contents(new_text);
+                    genkoyoshi.model.set_contents_from_file.begin(file);
                 } else {
                     printerr("ERROR: This is not a text file!\n");
                 }

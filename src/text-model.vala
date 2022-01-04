@@ -67,6 +67,29 @@ public class TextModel : Object {
         set_contents(src);
     }
 
+    /**
+     * ファイル名を受け取るコンストラクタ。
+     * 引数のファイル名からテキストを作成して保持する。
+     */
+    public TextModel.from_filename(string filename) {
+        var file = File.new_for_path(filename);
+        Idle.add(() => {
+            set_contents_from_file.begin(file);
+            return false;
+        });
+    }
+    
+    /**
+     * ファイルを受け取るコンストラクタ。
+     * 引数のファイルからテキストを作成して保持する。
+     */
+    public TextModel.from_file(File file) {
+        Idle.add(() => {
+            set_contents_from_file.begin(file);
+            return false;
+        });
+    }
+    
     // ステータス関連
 
     /**
@@ -306,6 +329,38 @@ public class TextModel : Object {
         changed();
     }
 
+    public async void set_contents_from_file(File file) {
+        try {
+            data.clear();
+            var reader = new DataInputStream(file.read());
+            int limit_lines = X_LENGTH;
+            string? line = null;
+            size_t length = 0;
+            while ((line = reader.read_upto("\n", 1, out length, null)) != null) {
+                char stop_char = (char) reader.read_byte();
+                var text_list = construct_text(line, DIRECT_INPUT, WRAP, true);
+                if (stop_char == '\n') {
+                    text_list.last().add(new TextElement("\n"));
+                } else if (stop_char == '\0') {
+                    break;
+                }
+                data.add_all(text_list);
+                int visible_lines = count_visible_lines();
+                if (visible_lines > limit_lines) {
+                    limit_lines = X_LENGTH * ((visible_lines / X_LENGTH) + 1);
+                    Idle.add(set_contents_from_file.callback);
+                    yield;
+                }
+            }
+            changed();
+        } catch (Error e) {
+            Idle.add(set_contents_from_file.callback);
+            yield;
+            printerr("IOError: %s\n", e.message);
+            Process.exit(1);
+        }
+    }
+    
     public string get_contents() {
         StringBuilder sb = new StringBuilder();
         foreach (var visible_line in data) {

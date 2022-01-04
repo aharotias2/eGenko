@@ -22,6 +22,9 @@ public class SimpleList<T> : Object {
         public T data;
         public Element<T>? next;
         public unowned Element<T>? prev;
+        public Element.from_data(T data) {
+            this.data = data;
+        }
     }
 
     private Element<T>? root;
@@ -68,7 +71,7 @@ public class SimpleList<T> : Object {
     }
 
     public SimpleList.from_data(T new_data, ...) {
-        root = new Element<T>() { data = new_data };
+        root = new Element<T>.from_data(new_data);
         var l = va_list();
         Element<T> e = root;
         while (true) {
@@ -76,7 +79,7 @@ public class SimpleList<T> : Object {
             if (va_data == null) {
                 break;
             } else {
-                e.next = new Element<T>() { data = va_data };
+                e.next = new Element<T>.from_data(va_data);
                 e.next.prev = e;
             }
             e = e.next;
@@ -88,7 +91,7 @@ public class SimpleList<T> : Object {
         SimpleList<T> new_list = new SimpleList<T>();
         if (n == 0) {
             new_list.root = root;
-            clear();
+            root = null;
         } else if (n < size) {
             Element<T>? e = get_nth_element(n - 1);
             Element<T> next_first = e.next;
@@ -115,10 +118,10 @@ public class SimpleList<T> : Object {
 
     public void add(T new_element) {
         if (root == null) {
-            root = new Element<T>() { data = new_element };
+            root = new Element<T>.from_data(new_element);
         } else {
             Element<T> e = get_last_element();
-            e.next = new Element<T>() { data = new_element };
+            e.next = new Element<T>.from_data(new_element);
             e.next.prev = e;
         }
     }
@@ -128,27 +131,28 @@ public class SimpleList<T> : Object {
             return;
         } else if (size == 0) {
             root = list.root;
+            list.root = null;
         } else {
             Element<T> last = get_last_element();
             last.next = list.root;
             last.next.prev = last;
+            list.root = null;
         }
-        list.clear();
     }
 
     public void insert(int index, T new_data) {
         if (root == null) {
             warn_if_fail (index == 0);
-            root = new Element<T>() { data = new_data };
+            root = new Element<T>.from_data(new_data);
         } else {
             if (index == 0) {
-                Element<T> e = new Element<T>() { data = new_data };
+                Element<T> e = new Element<T>.from_data(new_data);
                 e.next = root;
                 e.next.prev = e;
                 root = e;
             } else if (index < size) {
                 Element<T>? e = get_nth_element(index - 1);
-                Element<T> new_elem = new Element<T>() { data = new_data };
+                Element<T> new_elem = new Element<T>.from_data(new_data);
                 new_elem.next = e.next;
                 if (e.next != null) {
                     new_elem.next.prev = new_elem;
@@ -156,7 +160,7 @@ public class SimpleList<T> : Object {
                 e.next = new_elem;
                 new_elem.prev = e;
             } else {
-                warn_if_fail(index > size);
+                warn_if_fail(index == size);
                 add(new_data);
             }
         }
@@ -167,12 +171,12 @@ public class SimpleList<T> : Object {
             return;
         } else if (root == null && index == 0) {
             root = new_elements.root;
-            new_elements.clear();
+            new_elements.root = null;
         } else {
             if (index == 0) {
                 new_elements.get_last_element().next = root;
                 root = new_elements.root;
-                new_elements.clear();
+                new_elements.root = null;
             } else if (index < size) {
                 Element<T>? e1 = get_nth_element(index - 1);
                 if (e1.next == null) {
@@ -187,7 +191,7 @@ public class SimpleList<T> : Object {
                     e1.next = new_elements.root;
                     e1.next.prev = e1;
                 }
-                new_elements.clear();
+                new_elements.root = null;
             } else {
                 concat(new_elements);
             }
@@ -220,12 +224,16 @@ public class SimpleList<T> : Object {
     }
 
     public SimpleList<T>? remove(int start_index, int num_to_remove) {
+        return slice_cut(start_index, start_index + num_to_remove);
+    }
+
+    public SimpleList<T>? slice_cut(int start_index, int end_index) {
         assert(start_index >= 0);
         SimpleList<T> list = new SimpleList<T>();
         int max = size;
         if (start_index == 0) {
-            if (num_to_remove < max) {
-                Element<T> e = get_nth_element(num_to_remove);
+            if (end_index < max) {
+                Element<T> e = get_nth_element(end_index);
                 list.root = root;
                 e.prev.next = null;
                 root = e;
@@ -235,9 +243,9 @@ public class SimpleList<T> : Object {
                 root = null;
             }
         } else {
-            if (start_index + num_to_remove < max) {
+            if (end_index < max) {
                 Element<T> e1 = get_nth_element(start_index - 1);
-                Element<T> e2 = get_nth_element(start_index + num_to_remove);
+                Element<T> e2 = get_nth_element(end_index);
                 Element<T> e3 = e1.next;
                 e3.prev = null;
                 list.root = e3;
@@ -252,10 +260,6 @@ public class SimpleList<T> : Object {
             }
         }
         return list;
-    }
-
-    public SimpleList<T>? slice_cut(int start_index, int end_index) {
-        return remove(start_index, end_index - start_index);
     }
 
     public SimpleList<T>? copy_all() {
@@ -285,8 +289,7 @@ public class SimpleList<T> : Object {
         unowned Element<T> src_iter = get_nth_element(start_index);
         unowned Element<T> dest_iter = list.root;
         for (int i = start_index; i < end_index; i++) {
-            dest_iter.next = new Element<T>();
-            dest_iter.next.data = src_iter.data;
+            dest_iter.next = new Element<T>.from_data(src_iter.data);
             dest_iter.next.prev = dest_iter;
             dest_iter = dest_iter.next;
             src_iter = src_iter.next;
