@@ -595,6 +595,12 @@ public class TextModel : Object {
      * 選択範囲にあるテキストを削除し、その代わりに新たなテキストを挿入する。
      */
     private void insert_text(Gee.List<SimpleList<TextElement>> new_piece, Gee.List<EditAction> action_list) {
+        // 選択範囲内の文字列を削除する。
+        if (!selection.start.comp_eq(selection.last)) {
+            debug("insert_text go into delete region");
+            delete_region(selection, action_list);
+            debug("insert_text come back from delete region");
+        }
         var insert_text_action = new InsertTextAction(data, selection, new_piece, edit_mode);
         selection = insert_text_action.perform();
         action_list.add(insert_text_action);
