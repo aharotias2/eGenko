@@ -21,13 +21,9 @@ delegate void ForeachReverseCallback<T>(T element);
 
 void foreach_reverse<T>(Gee.BidirList<T> list, ForeachReverseCallback<T> func) {
     var iter = list.bidir_list_iterator();
-    iter.last();
-    while (true) {
-        func(iter.get());
-        if (iter.has_previous()) {
-            iter.previous();
-        } else {
-            break;
-        }
+    if (iter.last()) {
+        do {
+            func(iter.get());
+        } while (iter.previous());
     }
 }

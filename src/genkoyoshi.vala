@@ -28,12 +28,12 @@ public class GenkoYoshi : Gtk.DrawingArea {
     public signal void require_context_menu(Gdk.EventButton event);
 
     public signal void page_changed(int page, int total_pages);
-    
+
     /**
      * ページ
      */
     public int page { get; set; default = 0; }
-    
+
     /**
      * 原稿用紙を描画する際に使うフォントの設定
      */
@@ -44,12 +44,12 @@ public class GenkoYoshi : Gtk.DrawingArea {
             style = NORMAL
         };
     }
-    
+
     /**
      * 原稿用紙を描画する際に使うカラーパレットのようなもの。
      */
     public ColorSetting color { get; set; default = ColorSetting() {
-            background = { 1.0, 1.0, 1.0, 1.0 }, 
+            background = { 1.0, 1.0, 1.0, 1.0 },
             font = { 0.1, 0.1, 0.1, 1.0 },
             border = { 0.7, 0.7, 0.0, 1.0 },
             selection_border = { 0.5, 0.5, 1.0, 1.0 },
@@ -101,20 +101,25 @@ public class GenkoYoshi : Gtk.DrawingArea {
     private Gdk.Point[,] position;
     private bool is_fit_to_window = true;
     private bool is_button_pressed = false;
-    
+
     public GenkoYoshi() {
         model = new TextModel();
+        init();
+    }
+
+    public GenkoYoshi.with_model(TextModel model) {
+        this.model = model;
         init();
     }
 
     /**
      * 初期化処理
      * 入力メソッドのイベントの初期化等を行う。
-     */    
+     */
     private void init() {
         can_focus = true;
         focus_on_click = true;
-        
+
         im = new Gtk.IMMulticontext();
         {
             im.set_use_preedit(true);
@@ -138,9 +143,9 @@ public class GenkoYoshi : Gtk.DrawingArea {
                 queue_draw();
             });
         }
-        
+
         position = new Gdk.Point[X_LENGTH, Y_LENGTH];
-        
+
         is_fit_to_window = true;
 
         add_events (Gdk.EventMask.BUTTON_PRESS_MASK
@@ -161,7 +166,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
         model.set_cursor({model.get_selection_last().hpos + X_LENGTH, model.get_selection_last().vpos});
         queue_draw();
     }
-    
+
     /**
      * 前のページに移動する。
      */
@@ -173,7 +178,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
             queue_draw();
         }
     }
-    
+
     /**
      * サイズが変更された時の処理。
      */
@@ -260,7 +265,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
             }
             debug("padding_left: %d, padding_top: %d, cell_width: %d, border_width: %d, side_width: %d, separator_width: %d",
                     padding_left, padding_top, cell_width, border_width, side_width, separator_width);
-            
+
         }
         queue_draw();
     }
@@ -275,7 +280,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
         cairo.set_source_rgba(color.background.red, color.background.green, color.background.blue, color.background.alpha);
         cairo.rectangle(0.0, 0.0, get_allocated_width(), get_allocated_height());
         cairo.fill();
-        
+
         cairo.set_source_rgba(color.border.red, color.border.green, color.border.blue, color.border.alpha);
         cairo.set_line_width(border_width * 2);
 
@@ -347,7 +352,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
 
         // 選択範囲を描画
         draw_selection(cairo);
-        
+
         try {
             // 文字を描画する
             draw_text(cairo);
@@ -355,13 +360,13 @@ public class GenkoYoshi : Gtk.DrawingArea {
             printerr("%s\n", e.message);
             Process.exit(e.code);
         }
-        
+
         return true;
     }
 
     /**
      * 選択範囲、またはカーソルを描画する。
-     */    
+     */
     private void draw_selection(Cairo.Context cairo) {
         cairo.save();
         cairo.set_line_width(3.0);
@@ -435,7 +440,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
 
     /**
      * 原稿用紙中央のアクセントを描画する。
-     */    
+     */
     private void draw_accent(Cairo.Context cairo) {
         double x0 = position[10, 3].x + border_width + cell_width + border_width + side_width + 2;
         double y0 = position[10, 3].y + cell_width / 2;
@@ -448,16 +453,16 @@ public class GenkoYoshi : Gtk.DrawingArea {
         double x4 = x0;
         double y4 = y2;
         double y6 = y0 - get_allocated_height() * 0.003;
-        
+
         cairo.set_line_width(0.0);
-        
+
         cairo.move_to(x0, y0);
         cairo.line_to(x1, y1);
         cairo.line_to(x2, y2);
         cairo.line_to(x3, y3);
         cairo.line_to(x4, y4);
         cairo.fill();
-        
+
         double y5 = position[10, 13].y + cell_width / 2;
         cairo.set_line_width(1.0);
 
@@ -545,13 +550,13 @@ public class GenkoYoshi : Gtk.DrawingArea {
                 }
             }
         }
-        
+
         cairo.restore();
     }
 
     /**
      * マウスボタン押下時イベント処理
-     * 
+     *
      * カーソル移動を行う
      */
     public override bool button_press_event(Gdk.EventButton event) {
@@ -573,10 +578,10 @@ public class GenkoYoshi : Gtk.DrawingArea {
         }
         return false;
     }
-    
+
     /**
      * マウスボタンが離された時の処理
-     * 
+     *
      * 選択範囲の変更処理を行う
      */
     public override bool button_release_event(Gdk.EventButton event) {
@@ -597,12 +602,12 @@ public class GenkoYoshi : Gtk.DrawingArea {
     public override bool enter_notify_event(Gdk.EventCrossing event) {
         return true;
     }
-    
+
     public override bool leave_notify_event(Gdk.EventCrossing event) {
         is_button_pressed = false;
         return false;
     }
-    
+
     public override bool motion_notify_event(Gdk.EventMotion event) {
         if (is_button_pressed) {
             for (int x = 0; x < X_LENGTH; x++) {
@@ -620,17 +625,17 @@ public class GenkoYoshi : Gtk.DrawingArea {
         }
         return false;
     }
-    
+
     public override bool focus_in_event(Gdk.EventFocus event) {
         im.focus_in();
         return true;
     }
-    
+
     public override bool focus_out_event(Gdk.EventFocus event) {
         im.focus_out();
         return true;
     }
-    
+
     public override bool key_press_event(Gdk.EventKey event) {
         if (!is_focus) {
             grab_focus();
@@ -693,7 +698,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
         }
         return true;
     }
-    
+
     private void set_preedit_location() {
         var region = model.get_selection();
         var pixel_position = position[region.start.hpos, region.start.vpos];

@@ -20,6 +20,7 @@
 public class InsertTextAction : AbstractEditAction {
     private EditMode edit_mode;
     private Gee.List<SimpleList<TextElement>> text_piece;
+
     public InsertTextAction(Gee.List<SimpleList<TextElement>> text, Region selection,
             Gee.List<SimpleList<TextElement>> text_piece, EditMode edit_mode) {
         base(text, selection);

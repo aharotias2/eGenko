@@ -17,8 +17,6 @@
  * Copyright 2021 Takayuki Tanaka
  */
 
-public errordomain AppError {
-    LOGICAL_ERROR,
-    INDEX_OUT_OF_BOUNDS,
-    NO_FILE_SPECIFIED
+public enum SaveMode {
+    OVERWRITE, RENAME
 }

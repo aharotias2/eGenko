@@ -78,7 +78,7 @@ public class TextModel : Object {
             return false;
         });
     }
-    
+
     /**
      * ファイルを受け取るコンストラクタ。
      * 引数のファイルからテキストを作成して保持する。
@@ -89,7 +89,7 @@ public class TextModel : Object {
             return false;
         });
     }
-    
+
     // ステータス関連
 
     /**
@@ -360,7 +360,7 @@ public class TextModel : Object {
             Process.exit(1);
         }
     }
-    
+
     public string get_contents() {
         StringBuilder sb = new StringBuilder();
         foreach (var visible_line in data) {
@@ -427,6 +427,7 @@ public class TextModel : Object {
         var action_list = edit_mode == PREEDITING ? preedit_action_list : begin_new_edit_action();
         insert_text(new_text, action_list);
         cursor_moved(selection.last);
+        changed();
 
         edit_mode = tmp;
         if (edit_mode == PREEDITING) {
@@ -440,6 +441,7 @@ public class TextModel : Object {
         var action_list = begin_new_edit_action();
         insert_text(text, action_list);
         cursor_moved(selection.last);
+        changed();
     }
 
     /**
@@ -496,6 +498,7 @@ public class TextModel : Object {
         var action_list = begin_new_edit_action();
         delete_region(selection, action_list);
         cursor_moved(selection.last);
+        changed();
     }
 
     /**
@@ -532,6 +535,7 @@ public class TextModel : Object {
         var action_list = begin_new_edit_action();
         delete_region(selection, action_list);
         cursor_moved(selection.last);
+        changed();
     }
 
     /**
@@ -541,6 +545,7 @@ public class TextModel : Object {
         var action_list = begin_new_edit_action();
         delete_region(selection, action_list);
         cursor_moved(selection.last);
+        changed();
     }
 
     /**
@@ -553,6 +558,7 @@ public class TextModel : Object {
         });
         redo_list.push_action(action_list);
         cursor_moved(selection.last);
+        changed();
     }
 
     /**
@@ -565,6 +571,7 @@ public class TextModel : Object {
         }
         undo_list.push_action(action_list);
         cursor_moved(selection.last);
+        changed();
     }
 
     public Gee.LinkedList<EditAction> begin_new_edit_action() {
