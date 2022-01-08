@@ -482,7 +482,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
         cairo.select_font_face(font.family, font.style, font.weight);
         cairo.set_font_size((double) cell_width * 0.7);
         cairo.set_source_rgba(color.font.red, color.font.green, color.font.blue, color.font.alpha);
-
+        cairo.set_line_width(1.0);
         for (int x = 0; x < X_LENGTH; x++) {
             for (int y = 0; y < Y_LENGTH; y++) {
                 TextElement? elem = model.get_element(page * X_LENGTH + x, y);
@@ -511,6 +511,21 @@ public class GenkoYoshi : Gtk.DrawingArea {
                         if (color.is_space_visible) {
                             cairo.set_source_rgba(color.space.red, color.space.green, color.space.blue, color.space.alpha);
                             cairo.show_text("□");
+                            cairo.set_source_rgba(color.font.red, color.font.green, color.font.blue, color.font.alpha);
+                            continue;
+                        }
+                    } else if (elem.str == " ") {
+                        // 半角空白文字を表示する処理
+                        // is_space_visibleが設定されている場合は空白文字を表示する。
+                        if (color.is_space_visible) {
+                            cairo.set_source_rgba(color.space.red, color.space.green, color.space.blue, color.space.alpha);
+                            cairo.rectangle(
+                                position[x, y].x + cell_width * 0.25,
+                                position[x, y].y + cell_width * 0.25,
+                                cell_width * 0.25,
+                                cell_width * 0.50
+                            );
+                            cairo.stroke();
                             cairo.set_source_rgba(color.font.red, color.font.green, color.font.blue, color.font.alpha);
                             continue;
                         }
@@ -660,40 +675,40 @@ public class GenkoYoshi : Gtk.DrawingArea {
             }
             return false;
         } else {
-            switch (event.keyval) {
-              case Gdk.Key.Up:
-                model.move_backward(1, is_shift_masked);
-                break;
-              case Gdk.Key.Down:
-                model.move_foreward(1, is_shift_masked);
-                break;
-              case Gdk.Key.Right:
-                model.move_to_right(1, is_shift_masked);
-                break;
-              case Gdk.Key.Left:
-                model.move_to_left(1, is_shift_masked);
-                break;
-              case Gdk.Key.Page_Down:
-                next_page();
-                break;
-              case Gdk.Key.Page_Up:
-                prev_page();
-                break;
-              case Gdk.Key.BackSpace:
-                model.delete_char_backward();
-                break;
-              case Gdk.Key.Delete:
-                model.delete_char();
-                break;
-              case Gdk.Key.Return:
-                if (model.edit_mode == PREEDITING) {
-                    return im.filter_keypress(event);
-                } else {
+            if (model.edit_mode == PREEDITING) {
+                im.filter_keypress(event);
+            } else {
+                switch (event.keyval) {
+                  case Gdk.Key.Up:
+                    model.move_backward(1, is_shift_masked);
+                    break;
+                  case Gdk.Key.Down:
+                    model.move_foreward(1, is_shift_masked);
+                    break;
+                  case Gdk.Key.Right:
+                    model.move_to_right(1, is_shift_masked);
+                    break;
+                  case Gdk.Key.Left:
+                    model.move_to_left(1, is_shift_masked);
+                    break;
+                  case Gdk.Key.Page_Down:
+                    next_page();
+                    break;
+                  case Gdk.Key.Page_Up:
+                    prev_page();
+                    break;
+                  case Gdk.Key.BackSpace:
+                    model.delete_char_backward();
+                    break;
+                  case Gdk.Key.Delete:
+                    model.delete_char();
+                    break;
+                  case Gdk.Key.Return:
                     model.insert_newline();
+                    break;
+                  default:
+                    return im.filter_keypress(event);
                 }
-                break;
-              default:
-                return im.filter_keypress(event);
             }
         }
         return true;
