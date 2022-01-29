@@ -596,6 +596,10 @@ public class TextModel : Object {
         cursor_moved(selection.last);
     }
 
+    public void search_forward(string needle) {
+
+    }
+
     // プライベートメソッド
 
     /**

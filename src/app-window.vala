@@ -28,9 +28,16 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
     private Gtk.Label page_label;
     private Gtk.Button prev_page_button;
     private Gtk.Button next_page_button;
+    private Gtk.Revealer search_bar_revealer;
+    private Gtk.Revealer replace_bar_revealer;
+    private Gtk.Entry search_bar_entry;
+    private Gtk.Entry replace_bar_entry1;
+    private Gtk.Entry replace_bar_entry2;
 
     private SimpleAction save_action;
     private SimpleAction save_as_action;
+    private SimpleAction search_action;
+    private SimpleAction replace_action;
 
     public GenkoyoshiAppWindow(Gtk.Application app) {
         show_menubar = false;
@@ -106,16 +113,109 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                 toolbar = new Gtk.Toolbar();
             }
 
-            book = new Gtk.Notebook();
+            var book_overlay = new Gtk.Overlay();
             {
-                book.append_page(create_new_genko_holder());
-                genkoholder = get_active_page();
-                book.change_current_page.connect((page) => {
+                book = new Gtk.Notebook();
+                {
+                    book.append_page(create_new_genko_holder());
                     genkoholder = get_active_page();
-                    return true;
-                });
-                book.show_border = false;
-                book.show_tabs = false;
+                    book.change_current_page.connect((page) => {
+                        genkoholder = get_active_page();
+                        return true;
+                    });
+                    book.show_border = false;
+                    book.show_tabs = false;
+                }
+
+                var search_bar_revealer_box = new Gtk.Box(VERTICAL, 0);
+                {
+                    search_bar_revealer = new Gtk.Revealer();
+                    {
+                        var search_bar_box = new Gtk.Box(HORIZONTAL, 5);
+                        {
+                            search_bar_entry = new Gtk.Entry();
+
+                            var search_bar_search_button = new Gtk.Button.with_label(_("Search"));
+                            search_bar_search_button.clicked.connect(() => {
+                                //genkoholder.genkoyoshi.model.search_next(search_bar_entry.text);
+                            });
+
+                            var search_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR);
+                            search_bar_close_button.clicked.connect(() => {
+                                search_bar_revealer.reveal_child = false;
+                            });
+
+                            search_bar_box.pack_start(search_bar_entry, false, false);
+                            search_bar_box.pack_start(search_bar_search_button, false, false);
+                            search_bar_box.pack_start(search_bar_close_button, false, false);
+                            search_bar_box.get_style_context().add_class("search_box");
+                        }
+
+                        search_bar_revealer.add(search_bar_box);
+                        search_bar_revealer.transition_type = SLIDE_UP;
+                        search_bar_revealer.reveal_child = false;
+                    }
+
+                    search_bar_revealer_box.pack_start(search_bar_revealer, false, false);
+                    search_bar_revealer_box.halign = CENTER;
+                }
+
+                var replace_bar_revealer_box = new Gtk.Box(VERTICAL, 0);
+                {
+                    replace_bar_revealer = new Gtk.Revealer();
+                    {
+                        var replace_bar_hbox = new Gtk.Box(HORIZONTAL, 5);
+                        {
+                            var replace_bar_vbox1 = new Gtk.Box(VERTICAL, 5);
+                            {
+                                replace_bar_entry1 = new Gtk.Entry();
+                                replace_bar_entry2 = new Gtk.Entry();
+
+                                replace_bar_vbox1.pack_start(replace_bar_entry1, false, false);
+                                replace_bar_vbox1.pack_start(replace_bar_entry2, false, false);
+                            }
+
+                            var replace_bar_vbox2 = new Gtk.Box(VERTICAL, 5);
+                            {
+                                var replace_bar_replace_button = new Gtk.Button.with_label(_("Replace"));
+                                replace_bar_replace_button.clicked.connect(() => {
+
+                                });
+
+                                var replace_bar_replace_all_button = new Gtk.Button.with_label(_("Replace All"));
+                                replace_bar_replace_all_button.clicked.connect(() => {
+
+                                });
+
+                                replace_bar_vbox2.pack_start(replace_bar_replace_button, false, false);
+                                replace_bar_vbox2.pack_start(replace_bar_replace_all_button, false, false);
+                            }
+
+                            var replace_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR);
+                            replace_bar_close_button.clicked.connect(() => {
+                                replace_bar_revealer.reveal_child = false;
+                            });
+
+                            replace_bar_hbox.pack_start(replace_bar_vbox1, false, false);
+                            replace_bar_hbox.pack_start(replace_bar_vbox2, false, false);
+                            replace_bar_hbox.pack_start(replace_bar_close_button, false, false);
+                            replace_bar_hbox.get_style_context().add_class("search_box");
+                        }
+
+                        replace_bar_revealer.add(replace_bar_hbox);
+                        replace_bar_revealer.transition_type = SLIDE_UP;
+                        replace_bar_revealer.reveal_child = false;
+                    }
+
+                    replace_bar_revealer_box.pack_start(replace_bar_revealer, false, false);
+                    replace_bar_revealer_box.halign = CENTER;
+                }
+
+                book_overlay.add(book);
+                book_overlay.add_overlay(search_bar_revealer_box);
+                book_overlay.set_overlay_pass_through(search_bar_revealer_box, true);
+                book_overlay.add_overlay(replace_bar_revealer_box);
+                book_overlay.set_overlay_pass_through(replace_bar_revealer_box, true);
             }
 
             if (show_menubar) {
@@ -123,7 +223,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                 vbox1.pack_start(toolbar, false, false);
             }
 
-            vbox1.pack_start(book, true, true);
+            vbox1.pack_start(book_overlay, true, true);
         }
 
         if (!show_menubar) {
@@ -223,6 +323,14 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         var choose_font_action = new SimpleAction("choose-font", null);
         choose_font_action.activate.connect(() => choose_font());
         add_action(choose_font_action);
+
+        search_action = new SimpleAction("search", null);
+        search_action.activate.connect(() => do_search());
+        add_action(search_action);
+
+        replace_action = new SimpleAction("replace", null);
+        replace_action.activate.connect(() => do_replace());
+        add_action(replace_action);
     }
 
     /**
@@ -232,6 +340,9 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
      * 処理を受け渡す。
      */
     public override bool key_press_event(Gdk.EventKey event) {
+        if (search_bar_entry.is_focus) {
+            return false;
+        }
         if (CONTROL_MASK in event.state) {
             switch (event.keyval) {
               case Gdk.Key.z:
@@ -430,5 +541,20 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
      */
     private void do_select_all() {
         genkoholder.genkoyoshi.model.select_all();
+    }
+
+    private void do_search() {
+        if (replace_bar_revealer.child_revealed) {
+            replace_bar_revealer.reveal_child = false;
+        }
+        print("do_search\n");
+        search_bar_revealer.reveal_child = true;
+    }
+
+    private void do_replace() {
+        if (search_bar_revealer.child_revealed) {
+            search_bar_revealer.reveal_child = false;
+        }
+        replace_bar_revealer.reveal_child = true;
     }
 }
