@@ -575,6 +575,9 @@ public class GenkoYoshi : Gtk.DrawingArea {
      * カーソル移動を行う
      */
     public override bool button_press_event(Gdk.EventButton event) {
+        if (!is_focus) {
+            grab_focus();
+        }
         if (event.button == Gdk.BUTTON_SECONDARY) {
             require_context_menu(event);
         } else {

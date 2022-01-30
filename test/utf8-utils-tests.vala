@@ -33,6 +33,12 @@ int main(string[] args) {
         return test_codepoint_to_utf8(0x30B3, "コ");
       case 14:
         return test_codepoint_to_utf8(0x1F0A0, "🂠");
+      case 15:
+        return test_string_to_list("あいうえお", 5, "あ", "い", "う", "え", "お");
+      case 16:
+        return test_string_to_list("あいuえお", 5, "あ", "い", "u", "え", "お");
+      case 17:
+        return test_string_to_list("", 0);
     }
     return 2;
 }
@@ -52,5 +58,20 @@ int test_utf8_to_codepoint(string utf8, uint32 expect_codepoint) {
 int test_codepoint_to_utf8(uint32 codepoint, string expect_string) {
     string result = Utf8Utils.codepoint_to_utf8(codepoint);
     print("get utf8: result => %s, expect => %s\n", result, expect_string);
+    return 0;
+}
+
+int test_string_to_list(string s, int expect_list_size, ...) {
+    Gee.List<string> result = Utf8Utils.string_to_list(s);
+    assert(result.size == expect_list_size);
+    var l = va_list();
+    for (int i = 0; i < result.size; i++) {
+        string? arg = l.arg();
+        if (arg == null) {
+            assert_not_reached();
+        } else {
+            assert(result[i] == arg);
+        }
+    }
     return 0;
 }

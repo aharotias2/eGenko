@@ -1,5 +1,6 @@
 .search_box {
     background-color: @theme_bg_color;
     border-radius: 0 0 3px 3px;
+    border-color: @borders;
     padding: 5px;
 }

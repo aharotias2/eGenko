@@ -127,4 +127,23 @@ namespace Utf8Utils {
         sb.prepend_c((char) head);
         return sb.str;
     }
+    
+    public Gee.List<string> string_to_list(string s) {
+        Gee.List<string> list = new Gee.ArrayList<string>();
+        int offset = 0;
+        while (offset < s.length) {
+            char c = s[offset];
+            int sub_length = 1;
+            try {
+                sub_length = get_length_sign(c);
+            } catch (Utf8Utils.ParseError e) {
+                offset++;
+                continue;
+            }
+            string sub = s.substring(offset, sub_length);
+            list.add(sub);
+            offset += sub_length;
+        }
+        return list;
+    }
 }

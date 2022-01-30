@@ -596,10 +596,154 @@ public class TextModel : Object {
         cursor_moved(selection.last);
     }
 
-    public void search_forward(string needle) {
-
+    public bool search_foreward(string needle, bool is_moved = false) {
+        Gee.List<string> needle_list = Utf8Utils.string_to_list(needle);
+        CellPosition start_pos = selection.start;
+        
+        if (start_pos.hpos < 0) {
+            start_pos.hpos = 0;
+        }
+        
+        if (start_pos.vpos < 0) {
+            start_pos.vpos = 0;
+        }
+        
+        if (data.size == 0) {
+            return false;
+        }
+        
+        while (true) {
+            if (start_pos.hpos >= data.size) {
+                return false;
+            }
+            
+            if (start_pos.vpos >= data[start_pos.hpos].size) {
+                if (start_pos.hpos == data.size - 1) {
+                    return false;
+                }
+                start_pos.hpos++;
+                start_pos.vpos = 0;
+                is_moved = true;
+                continue;
+            }
+            
+            if (data[start_pos.hpos][start_pos.vpos].str == "\n") {
+                start_pos.hpos++;
+                start_pos.vpos = 0;
+                is_moved = true;
+                continue;
+            }
+            
+            if (is_match(start_pos, needle_list)) {
+                if (is_moved) {
+                    selection = {
+                        start_pos,
+                        start_pos.add_offset(needle_list.size - 1)
+                    };
+                    cursor_moved(start_pos);
+                    return true;
+                }
+            }
+            
+            start_pos.self_add_offset(1);
+            is_moved = true;
+        }
     }
 
+    public bool search_backward(string needle, bool is_moved = false) {
+        Gee.List<string> needle_list = Utf8Utils.string_to_list(needle);
+        CellPosition start_pos = selection.start;
+        if (data.size == 0) {
+            return false;
+        }
+        
+        if (start_pos.hpos >= data.size) {
+            start_pos.hpos = data.size - 1;
+            start_pos.vpos = data[start_pos.hpos].size - 1;
+        } else if (start_pos.hpos == data.size - 1) {
+            if (start_pos.vpos >= data[start_pos.hpos].size) {
+                start_pos.vpos = data[start_pos.hpos].size - 1;
+            }
+        }
+        
+        while (true) {
+            if (start_pos.vpos >= data[start_pos.hpos].size) {
+                start_pos.vpos = data[start_pos.hpos].size - 1;
+                is_moved = true;
+                continue;
+            }
+            
+            if (data[start_pos.hpos][start_pos.vpos].str == "\n") {
+                start_pos.self_subtract_offset(1);
+                is_moved = true;
+                continue;
+            }
+            
+            if (is_match(start_pos, needle_list)) {
+                if (is_moved) {
+                    selection = {
+                        start_pos,
+                        start_pos.add_offset(needle_list.size - 1)
+                    };
+                    cursor_moved(start_pos);
+                    return true;
+                }
+            }
+            
+            if (start_pos.hpos == 0 && start_pos.vpos == 0) {
+                return false;
+            }
+
+            start_pos.self_subtract_offset(1);
+            is_moved = true;
+        }
+    }
+
+    public bool is_match(CellPosition pos, Gee.List<string> needle) {
+        int i = 0;
+        while (i < needle.size) {
+            if (needle[i] != data[pos.hpos][pos.vpos].str) {
+                return false;
+            } else if (i == needle.size - 1) {
+                return true;
+            } else {
+                i++;
+                pos.self_add_offset(1);
+            }
+        }
+        return false;
+    }
+
+    public bool replace(string from, string to) {
+        bool is_found = search_foreward(from, true);
+        if (!is_found) {
+            return false;
+        }
+        insert_string(to);
+        return true;
+    }
+
+    public int replace_all(string from, string to) {
+        var new_text = construct_text(to, DIRECT_INPUT, NOWRAP);
+        var action_list = begin_new_edit_action();
+        int replace_count = 0;
+        while (true) {
+            bool is_found = search_foreward(from, true);
+            if (!is_found) {
+                break;
+            }
+            var new_text_copy = clone_text(new_text);
+            insert_text(new_text_copy, action_list);
+            replace_count++;
+            selection.move_to(selection.start.add_offset(1));
+        }
+        if (replace_count > 0) {
+            cursor_moved(selection.start);
+            changed();
+        }
+        return replace_count;
+    }
+        
     // プライベートメソッド
 
     /**
@@ -686,6 +830,14 @@ public class TextModel : Object {
         return result;
     }
 
+    private Gee.List<SimpleList<TextElement>> clone_text(Gee.List<SimpleList<TextElement>> text) {
+        var result = new Gee.ArrayList<SimpleList<TextElement>>();
+        foreach (var line in text) {
+            result.add(line.copy_all());
+        }
+        return result;
+    }
+    
     /**
      * デバッグ用のメソッド。
      * 一行分のテキストの内容をデバッグ表示する。

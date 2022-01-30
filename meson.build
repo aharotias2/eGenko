@@ -73,6 +73,7 @@ executable(
     'src/conv-type.vala',
     'src/history.vala',
     'src/simple-list.vala',
+    'src/focus-list.vala',
     'src/gee-list-utils.vala',
     'src/actions/edit-action.vala',
     'src/actions/edit-action-utils.vala',
@@ -213,11 +214,12 @@ utf8_utils_tests = executable(
     'src/utf8-utils.vala'
   ],
   dependencies: [
-    dependency('gtk+-3.0')
+    dependency('gtk+-3.0'),
+    dependency('gee-0.8')
   ]
 )
 
-foreach i : range(1, 15)
+foreach i : range(1, 18)
   test('Utf8UtilsTest.@0@'.format(i), utf8_utils_tests, args: [i.to_string()])
 endforeach
 

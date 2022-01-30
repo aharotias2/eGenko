@@ -33,16 +33,25 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
     private Gtk.Entry search_bar_entry;
     private Gtk.Entry replace_bar_entry1;
     private Gtk.Entry replace_bar_entry2;
+    private Gtk.Button search_bar_search_foreward_button;
+    private Gtk.Button search_bar_search_backward_button;
+    private Gtk.Button search_bar_close_button;
+    private Gtk.Button replace_bar_replace_button;
+    private Gtk.Button replace_bar_replace_all_button;
+    private Gtk.Button replace_bar_close_button;
 
     private SimpleAction save_action;
     private SimpleAction save_as_action;
     private SimpleAction search_action;
     private SimpleAction replace_action;
 
+    private FocusList focus_list;
+    
     public GenkoyoshiAppWindow(Gtk.Application app) {
         show_menubar = false;
         application = app;
         init_action_map();
+        focus_list = new FocusList();
 
         var headerbar = new Gtk.HeaderBar();
         {
@@ -53,14 +62,12 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                     var navigation_box = new Gtk.ButtonBox(HORIZONTAL) {
                             layout_style = EXPAND };
                     {
-                        next_page_button = new Gtk.Button.from_icon_name("go-previous-symbolic",
-                                SMALL_TOOLBAR);
+                        next_page_button = new Gtk.Button.from_icon_name("go-previous-symbolic", SMALL_TOOLBAR);
                         {
                             next_page_button.action_name = "win.next-page";
                         }
 
-                        prev_page_button = new Gtk.Button.from_icon_name("go-next-symbolic",
-                                SMALL_TOOLBAR);
+                        prev_page_button = new Gtk.Button.from_icon_name("go-next-symbolic", SMALL_TOOLBAR);
                         {
                             prev_page_button.action_name = "win.prev-page";
                         }
@@ -133,22 +140,40 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                     {
                         var search_bar_box = new Gtk.Box(HORIZONTAL, 5);
                         {
-                            search_bar_entry = new Gtk.Entry();
+                            search_bar_entry = new Gtk.Entry() { can_focus = false };
+                            focus_list.append_widget(search_bar_entry);
 
-                            var search_bar_search_button = new Gtk.Button.with_label(_("Search"));
-                            search_bar_search_button.clicked.connect(() => {
-                                //genkoholder.genkoyoshi.model.search_next(search_bar_entry.text);
-                            });
+                            var search_bar_button_box = new Gtk.ButtonBox(HORIZONTAL);
+                            {
+                                search_bar_search_foreward_button = new Gtk.Button.from_icon_name("go-down-symbolic", SMALL_TOOLBAR) { can_focus = false };
+                                search_bar_search_foreward_button.clicked.connect(() => {
+                                    genkoholder.genkoyoshi.model.search_foreward(search_bar_entry.text);
+                                });
 
-                            var search_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR);
+                                search_bar_search_backward_button = new Gtk.Button.from_icon_name("go-up-symbolic", SMALL_TOOLBAR) { can_focus = false };
+                                search_bar_search_backward_button.clicked.connect(() => {
+                                    genkoholder.genkoyoshi.model.search_backward(search_bar_entry.text);
+                                });
+
+                                search_bar_button_box.pack_start(search_bar_search_foreward_button);
+                                search_bar_button_box.pack_start(search_bar_search_backward_button);
+                                search_bar_button_box.layout_style = EXPAND;
+                                
+                                focus_list.append_widget(search_bar_search_foreward_button);
+                                focus_list.append_widget(search_bar_search_backward_button);
+                            }
+                            
+                            search_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR) { can_focus = false };
                             search_bar_close_button.clicked.connect(() => {
-                                search_bar_revealer.reveal_child = false;
+                                hide_search_bar();
                             });
 
                             search_bar_box.pack_start(search_bar_entry, false, false);
-                            search_bar_box.pack_start(search_bar_search_button, false, false);
+                            search_bar_box.pack_start(search_bar_button_box, false, false);
                             search_bar_box.pack_start(search_bar_close_button, false, false);
                             search_bar_box.get_style_context().add_class("search_box");
+                            
+                            focus_list.append_widget(search_bar_close_button);
                         }
 
                         search_bar_revealer.add(search_bar_box);
@@ -168,40 +193,49 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                         {
                             var replace_bar_vbox1 = new Gtk.Box(VERTICAL, 5);
                             {
-                                replace_bar_entry1 = new Gtk.Entry();
-                                replace_bar_entry2 = new Gtk.Entry();
+                                replace_bar_entry1 = new Gtk.Entry() { can_focus = false };
+                                replace_bar_entry2 = new Gtk.Entry() { can_focus = false };
 
                                 replace_bar_vbox1.pack_start(replace_bar_entry1, false, false);
                                 replace_bar_vbox1.pack_start(replace_bar_entry2, false, false);
-                            }
 
+                                focus_list.append_widget(replace_bar_entry1);
+                                focus_list.append_widget(replace_bar_entry2);
+                            }
+                            
                             var replace_bar_vbox2 = new Gtk.Box(VERTICAL, 5);
                             {
-                                var replace_bar_replace_button = new Gtk.Button.with_label(_("Replace"));
+                                replace_bar_replace_button = new Gtk.Button.with_label(_("Replace")) { can_focus = false };
                                 replace_bar_replace_button.clicked.connect(() => {
-
+                                    genkoholder.genkoyoshi.model.replace(replace_bar_entry1.text, replace_bar_entry2.text);
                                 });
 
-                                var replace_bar_replace_all_button = new Gtk.Button.with_label(_("Replace All"));
+                                replace_bar_replace_all_button = new Gtk.Button.with_label(_("Replace All")) { can_focus = false };
                                 replace_bar_replace_all_button.clicked.connect(() => {
-
+                                    genkoholder.genkoyoshi.model.set_selection({{0, 0}, {0, 0}});
+                                    genkoholder.genkoyoshi.model.replace_all(replace_bar_entry1.text, replace_bar_entry2.text);
                                 });
 
                                 replace_bar_vbox2.pack_start(replace_bar_replace_button, false, false);
                                 replace_bar_vbox2.pack_start(replace_bar_replace_all_button, false, false);
+
+                                focus_list.append_widget(replace_bar_replace_button);
+                                focus_list.append_widget(replace_bar_replace_all_button);
                             }
 
-                            var replace_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR);
+                            replace_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR) { can_focus = false };
                             replace_bar_close_button.clicked.connect(() => {
-                                replace_bar_revealer.reveal_child = false;
+                                hide_replace_bar();
                             });
 
                             replace_bar_hbox.pack_start(replace_bar_vbox1, false, false);
                             replace_bar_hbox.pack_start(replace_bar_vbox2, false, false);
                             replace_bar_hbox.pack_start(replace_bar_close_button, false, false);
                             replace_bar_hbox.get_style_context().add_class("search_box");
-                        }
 
+                            focus_list.append_widget(replace_bar_close_button);
+                        }
+                            
                         replace_bar_revealer.add(replace_bar_hbox);
                         replace_bar_revealer.transition_type = SLIDE_UP;
                         replace_bar_revealer.reveal_child = false;
@@ -340,36 +374,46 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
      * 処理を受け渡す。
      */
     public override bool key_press_event(Gdk.EventKey event) {
-        if (search_bar_entry.is_focus) {
-            return false;
-        }
-        if (CONTROL_MASK in event.state) {
-            switch (event.keyval) {
-              case Gdk.Key.z:
-                do_undo();
-                break;
-              case Gdk.Key.y:
-                do_redo();
-                break;
-              case Gdk.Key.a:
-                do_select_all();
-                break;
-              case Gdk.Key.c:
-                do_copy();
-                return true;
-              case Gdk.Key.x:
-                do_cut();
-                return true;
-              case Gdk.Key.d:
-                do_delete();
-                return true;
-              case Gdk.Key.v:
-                do_paste();
-                return true;
+        if (genkoholder.genkoyoshi.is_focus) {
+            if (CONTROL_MASK in event.state) {
+                switch (event.keyval) {
+                  case Gdk.Key.z:
+                    do_undo();
+                    break;
+                  case Gdk.Key.y:
+                    do_redo();
+                    break;
+                  case Gdk.Key.a:
+                    do_select_all();
+                    break;
+                  case Gdk.Key.c:
+                    do_copy();
+                    return true;
+                  case Gdk.Key.x:
+                    do_cut();
+                    return true;
+                  case Gdk.Key.d:
+                    do_delete();
+                    return true;
+                  case Gdk.Key.v:
+                    do_paste();
+                    return true;
+                }
             }
+            return genkoholder.genkoyoshi.key_press_event(event);
+        } else if (event.keyval == Gdk.Key.Tab) {
+            if (SHIFT_MASK in event.state) {
+                focus_list.move_focus_backward();
+            } else {
+                focus_list.move_focus_foreward();
+            }
+            return true;
+        } else if (event.keyval == Gdk.Key.ISO_Left_Tab) {
+            focus_list.move_focus_backward();
+            return true;
+        } else {
+            return propagate_key_event(event);
         }
-
-        return genkoholder.genkoyoshi.key_press_event(event);
     }
 
     /**
@@ -545,16 +589,51 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
 
     private void do_search() {
         if (replace_bar_revealer.child_revealed) {
-            replace_bar_revealer.reveal_child = false;
+            hide_replace_bar();
         }
-        print("do_search\n");
-        search_bar_revealer.reveal_child = true;
+        show_search_bar();
+        focus_list.set_focus(search_bar_entry);
     }
 
     private void do_replace() {
         if (search_bar_revealer.child_revealed) {
-            search_bar_revealer.reveal_child = false;
+            hide_search_bar();
         }
+        show_replace_bar();
+        focus_list.set_focus(replace_bar_entry1);
+    }
+    
+    private void show_search_bar() {
+        search_bar_revealer.reveal_child = true;
+        search_bar_entry.can_focus = true;
+        search_bar_search_foreward_button.can_focus = true;
+        search_bar_search_backward_button.can_focus = true;
+        search_bar_close_button.can_focus = true;
+    }
+    
+    private void hide_search_bar() {
+        search_bar_revealer.reveal_child = false;
+        search_bar_entry.can_focus = false;
+        search_bar_search_foreward_button.can_focus = false;
+        search_bar_search_backward_button.can_focus = false;
+        search_bar_close_button.can_focus = false;
+    }
+    
+    private void show_replace_bar() {
         replace_bar_revealer.reveal_child = true;
+        replace_bar_entry1.can_focus = true;
+        replace_bar_entry2.can_focus = true;
+        replace_bar_replace_button.can_focus = true;
+        replace_bar_replace_all_button.can_focus = true;
+        replace_bar_close_button.can_focus = true;
+    }
+    
+    private void hide_replace_bar() {
+        replace_bar_revealer.reveal_child = false;
+        replace_bar_entry1.can_focus = false;
+        replace_bar_entry2.can_focus = false;
+        replace_bar_replace_button.can_focus = false;
+        replace_bar_replace_all_button.can_focus = false;
+        replace_bar_close_button.can_focus = false;
     }
 }
