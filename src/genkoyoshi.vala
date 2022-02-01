@@ -48,19 +48,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
     /**
      * 原稿用紙を描画する際に使うカラーパレットのようなもの。
      */
-    public ColorSetting color { get; set; default = ColorSetting() {
-            background = { 1.0, 1.0, 1.0, 1.0 },
-            font = { 0.1, 0.1, 0.1, 1.0 },
-            border = { 0.7, 0.7, 0.0, 1.0 },
-            selection_border = { 0.5, 0.5, 1.0, 1.0 },
-            selection_bg = { 0.95, 0.95, 1.0, 1.0 },
-            preedit_font = { 0.5, 0.5, 0.0, 1.0 },
-            is_newline_visible = true,
-            newline_font = { 0.5, 0.5, 1.0, 1.0 },
-            is_space_visible = true,
-            space = { 0.5, 0.5, 1.0, 1.0 }
-        };
-    }
+    public ColorSetting color { get; set; default = PredefinedColorSetting.THEME_CONSOLE; }
 
     /**
      * テキスト編集処理を行うオブジェクト。

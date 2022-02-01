@@ -23,7 +23,6 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
 
     private Gtk.Notebook book;
     private GenkoHolder genkoholder;
-    private Gtk.Toolbar toolbar;
     private Gtk.Menu context_edit_menu;
     private Gtk.Label page_label;
     private Gtk.Button prev_page_button;
@@ -44,82 +43,62 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
     private SimpleAction save_as_action;
     private SimpleAction search_action;
     private SimpleAction replace_action;
+    private SimpleAction change_theme_action;
+    private Gee.Map<string, ColorSetting?> theme_map;
 
     private FocusList focus_list;
-    
+
     public GenkoyoshiAppWindow(Gtk.Application app) {
-        show_menubar = false;
         application = app;
         init_action_map();
         focus_list = new FocusList();
+        theme_map = new Gee.HashMap<string, ColorSetting?>();
+        theme_map["Default"] = PredefinedColorSetting.THEME_DEFAULT;
+        theme_map["Dark"] = PredefinedColorSetting.THEME_DARK;
+        theme_map["Console"] = PredefinedColorSetting.THEME_CONSOLE;
 
         var headerbar = new Gtk.HeaderBar();
         {
-            if (!show_menubar) {
-                /* previous, next, open, and save buttons at the left of the headerbar */
-                var header_buttons = new Gtk.Box(HORIZONTAL, 5);
+            /* previous, next, open, and save buttons at the left of the headerbar */
+            var header_buttons = new Gtk.Box(HORIZONTAL, 5);
+            {
+                var navigation_box = new Gtk.ButtonBox(HORIZONTAL) {
+                        layout_style = EXPAND };
                 {
-                    var navigation_box = new Gtk.ButtonBox(HORIZONTAL) {
-                            layout_style = EXPAND };
+                    next_page_button = new Gtk.Button.from_icon_name("go-previous-symbolic", SMALL_TOOLBAR);
                     {
-                        next_page_button = new Gtk.Button.from_icon_name("go-previous-symbolic", SMALL_TOOLBAR);
-                        {
-                            next_page_button.action_name = "win.next-page";
-                        }
-
-                        prev_page_button = new Gtk.Button.from_icon_name("go-next-symbolic", SMALL_TOOLBAR);
-                        {
-                            prev_page_button.action_name = "win.prev-page";
-                        }
-
-                        navigation_box.pack_start(next_page_button);
-                        navigation_box.pack_start(prev_page_button);
+                        next_page_button.action_name = "win.next-page";
                     }
 
-                    page_label = new Gtk.Label("1/1");
+                    prev_page_button = new Gtk.Button.from_icon_name("go-next-symbolic", SMALL_TOOLBAR);
+                    {
+                        prev_page_button.action_name = "win.prev-page";
+                    }
 
-                    header_buttons.pack_start(navigation_box, false, false);
-                    header_buttons.pack_start(page_label, false, false);
+                    navigation_box.pack_start(next_page_button);
+                    navigation_box.pack_start(prev_page_button);
                 }
 
-                var menu_button = new Gtk.MenuButton();
-                {
-                    menu_button.set_menu_model(application.get_menu_by_id("hamburger-menu"));
-                    menu_button.image = new Gtk.Image.from_icon_name("open-menu-symbolic", SMALL_TOOLBAR);
-                }
+                page_label = new Gtk.Label("1/1");
 
-                headerbar.pack_start(header_buttons);
-                headerbar.pack_end(menu_button);
+                header_buttons.pack_start(navigation_box, false, false);
+                header_buttons.pack_start(page_label, false, false);
             }
+
+            var menu_button = new Gtk.MenuButton();
+            {
+                menu_button.set_menu_model(application.get_menu_by_id("hamburger-menu"));
+                menu_button.image = new Gtk.Image.from_icon_name("open-menu-symbolic", SMALL_TOOLBAR);
+            }
+
+            headerbar.pack_start(header_buttons);
+            headerbar.pack_end(menu_button);
 
             headerbar.show_close_button =true;
         }
 
         var vbox1 = new Gtk.Box(VERTICAL, 0);
         {
-            Gtk.MenuBar menubar;
-            if (show_menubar) {
-                menubar = new Gtk.MenuBar.from_model(application.get_menubar());
-
-                toolbar = new Gtk.Toolbar();
-                {
-                    var next_button = new Gtk.ToolButton(new Gtk.Image.from_icon_name("go-previous", Gtk.IconSize.SMALL_TOOLBAR), _("Next"));
-                    next_button.clicked.connect(() => {
-                        get_active_page().genkoyoshi.next_page();
-                    });
-                    var prev_button = new Gtk.ToolButton(new Gtk.Image.from_icon_name("go-next", Gtk.IconSize.SMALL_TOOLBAR), _("Previous"));
-                    prev_button.clicked.connect(() => {
-                        get_active_page().genkoyoshi.prev_page();
-                    });
-
-                    toolbar.insert(next_button, 0);
-                    toolbar.insert(prev_button, 1);
-                }
-            } else{
-                menubar = new Gtk.MenuBar();
-                toolbar = new Gtk.Toolbar();
-            }
-
             var book_overlay = new Gtk.Overlay();
             {
                 book = new Gtk.Notebook();
@@ -158,11 +137,11 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                                 search_bar_button_box.pack_start(search_bar_search_foreward_button);
                                 search_bar_button_box.pack_start(search_bar_search_backward_button);
                                 search_bar_button_box.layout_style = EXPAND;
-                                
+
                                 focus_list.append_widget(search_bar_search_foreward_button);
                                 focus_list.append_widget(search_bar_search_backward_button);
                             }
-                            
+
                             search_bar_close_button = new Gtk.Button.from_icon_name("window-close-symbolic", SMALL_TOOLBAR) { can_focus = false };
                             search_bar_close_button.clicked.connect(() => {
                                 hide_search_bar();
@@ -172,7 +151,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                             search_bar_box.pack_start(search_bar_button_box, false, false);
                             search_bar_box.pack_start(search_bar_close_button, false, false);
                             search_bar_box.get_style_context().add_class("search_box");
-                            
+
                             focus_list.append_widget(search_bar_close_button);
                         }
 
@@ -202,7 +181,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                                 focus_list.append_widget(replace_bar_entry1);
                                 focus_list.append_widget(replace_bar_entry2);
                             }
-                            
+
                             var replace_bar_vbox2 = new Gtk.Box(VERTICAL, 5);
                             {
                                 replace_bar_replace_button = new Gtk.Button.with_label(_("Replace")) { can_focus = false };
@@ -235,7 +214,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
 
                             focus_list.append_widget(replace_bar_close_button);
                         }
-                            
+
                         replace_bar_revealer.add(replace_bar_hbox);
                         replace_bar_revealer.transition_type = SLIDE_UP;
                         replace_bar_revealer.reveal_child = false;
@@ -252,18 +231,11 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                 book_overlay.set_overlay_pass_through(replace_bar_revealer_box, true);
             }
 
-            if (show_menubar) {
-                vbox1.pack_start(menubar, false, false);
-                vbox1.pack_start(toolbar, false, false);
-            }
-
             vbox1.pack_start(book_overlay, true, true);
         }
 
-        if (!show_menubar) {
-            set_titlebar(headerbar);
-            prev_page_button.sensitive = false;
-        }
+        set_titlebar(headerbar);
+        prev_page_button.sensitive = false;
 
         add(vbox1);
         set_size_request(800, 600);
@@ -365,6 +337,17 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         replace_action = new SimpleAction("replace", null);
         replace_action.activate.connect(() => do_replace());
         add_action(replace_action);
+
+        change_theme_action = new SimpleAction("change-theme", VariantType.STRING);
+        change_theme_action.activate.connect((param) => {
+            var theme_name = param.get_string();
+            var theme = theme_map[theme_name];
+            if (theme == null) {
+                return;
+            }
+            genkoholder.genkoyoshi.color = theme;
+        });
+        add_action(change_theme_action);
     }
 
     /**
@@ -602,7 +585,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         show_replace_bar();
         focus_list.set_focus(replace_bar_entry1);
     }
-    
+
     private void show_search_bar() {
         search_bar_revealer.reveal_child = true;
         search_bar_entry.can_focus = true;
@@ -610,7 +593,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         search_bar_search_backward_button.can_focus = true;
         search_bar_close_button.can_focus = true;
     }
-    
+
     private void hide_search_bar() {
         search_bar_revealer.reveal_child = false;
         search_bar_entry.can_focus = false;
@@ -618,7 +601,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         search_bar_search_backward_button.can_focus = false;
         search_bar_close_button.can_focus = false;
     }
-    
+
     private void show_replace_bar() {
         replace_bar_revealer.reveal_child = true;
         replace_bar_entry1.can_focus = true;
@@ -627,7 +610,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         replace_bar_replace_all_button.can_focus = true;
         replace_bar_close_button.can_focus = true;
     }
-    
+
     private void hide_replace_bar() {
         replace_bar_revealer.reveal_child = false;
         replace_bar_entry1.can_focus = false;

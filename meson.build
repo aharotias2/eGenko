@@ -80,6 +80,7 @@ executable(
     'src/actions/abstract-edit-action.vala',
     'src/actions/insert-text-action.vala',
     'src/actions/delete-region-action.vala',
+    'src/predefined-color-settings.vala',
     resources
   ],
   dependencies: [
