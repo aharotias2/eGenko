@@ -114,6 +114,7 @@ public class FocusList : Object {
             last_element.next.prev = last_element;
             last_element.next.next = null;
         }
+        widget.focus_in_event.connect((direction) => handle_on_focus(widget));
     }
     
     public void insert_widget(uint index, Gtk.Widget widget) {
@@ -127,6 +128,7 @@ public class FocusList : Object {
         new_element.next = iter.next;
         new_element.prev = iter;
         iter.next = new_element;
+        widget.focus_in_event.connect((direction) => handle_on_focus(widget));
     }
     
     public void set_focus(Gtk.Widget widget) {
@@ -144,5 +146,18 @@ public class FocusList : Object {
     
     private bool widget_can_focus(Gtk.Widget w) {
         return w.get_realized() && w.can_focus && w.visible;
+    }
+    
+    private bool handle_on_focus(Gtk.Widget widget) {
+        unowned Element iter = root;
+        while (iter.next != null) {
+            if (iter.next.widget == widget) {
+                current = iter.next;
+                break;
+            } else {
+                iter = iter.next;
+            }
+        }
+        return false;
     }
 }
