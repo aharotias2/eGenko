@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.aharotias2.genkoyoshi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-07 23:41+0900\n"
+"POT-Creation-Date: 2022-02-05 14:16+0900\n"
 "PO-Revision-Date: 2021-12-24 00:23+0900\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,156 +17,125 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/app-window.vala:92
-msgid "Next"
-msgstr "次を検索"
+#: src/app-window.vala:184
+msgid "Replace"
+msgstr "置換..."
 
-#: src/app-window.vala:96
-#, fuzzy
-msgid "Previous"
-msgstr "前を検索"
+#: src/app-window.vala:189
+msgid "Replace All"
+msgstr "置換..."
 
-#: src/app-window.vala:136
+#: src/app-window.vala:239
 msgid "Untitled"
 msgstr "無題"
 
-#: src/app-window.vala:136
+#: src/app-window.vala:239
 msgid " - Genkoyoshi"
 msgstr " - 原稿用紙"
 
-#: src/app-window.vala:269
-#, fuzzy
+#: src/app-window.vala:422
 msgid "Open file"
 msgstr "ファイルを開く"
 
-#: src/app-window.vala:269 src/app-window.vala:315
+#: src/app-window.vala:422 src/app-window.vala:468
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/app-window.vala:269
+#: src/app-window.vala:422
 msgid "Open"
 msgstr "開く"
 
-#: src/app-window.vala:293
+#: src/app-window.vala:446
 msgid "Choose Font"
 msgstr "フォントを選ぶ"
 
-#: src/app-window.vala:314 src/app-window.vala:315 data/gtk/menus.ui:13
-#: data/gtk/menus.ui:137
+#: src/app-window.vala:467 src/app-window.vala:468 data/gtk/menus.ui:13
 msgid "Save"
 msgstr "保存する"
 
-#: src/app-window.vala:337
+#: src/app-window.vala:490
 msgid "File already exists. Do you want to overwrite it?"
 msgstr "ファイルはすでに存在します。上書きしますか？"
 
-#: src/app-window.vala:352
+#: src/app-window.vala:505
 msgid " - GenkoYoshi"
 msgstr " - 原稿用紙"
 
-#: data/gtk/menus.ui:8 data/gtk/menus.ui:133
+#: data/gtk/menus.ui:8
 msgid "Open File..."
 msgstr "ファイルを開く"
 
-#: data/gtk/menus.ui:17 data/gtk/menus.ui:141
+#: data/gtk/menus.ui:18
 msgid "Save As..."
 msgstr "名前をつけて保存"
 
-#: data/gtk/menus.ui:23 data/gtk/menus.ui:153
+#: data/gtk/menus.ui:25
 msgid "Edit"
 msgstr "編集"
 
-#: data/gtk/menus.ui:26 data/gtk/menus.ui:87 data/gtk/menus.ui:156
+#: data/gtk/menus.ui:28 data/gtk/menus.ui:121
 msgid "Undo"
 msgstr "元に戻す"
 
-#: data/gtk/menus.ui:30 data/gtk/menus.ui:91 data/gtk/menus.ui:160
+#: data/gtk/menus.ui:33 data/gtk/menus.ui:126
 msgid "Redo"
 msgstr "やり直す"
 
-#: data/gtk/menus.ui:36 data/gtk/menus.ui:97 data/gtk/menus.ui:166
+#: data/gtk/menus.ui:40 data/gtk/menus.ui:133
 msgid "Cut"
 msgstr "切り取り"
 
-#: data/gtk/menus.ui:40 data/gtk/menus.ui:101 data/gtk/menus.ui:170
+#: data/gtk/menus.ui:45 data/gtk/menus.ui:138
 msgid "Copy"
 msgstr "コピー"
 
-#: data/gtk/menus.ui:44 data/gtk/menus.ui:105 data/gtk/menus.ui:174
+#: data/gtk/menus.ui:50 data/gtk/menus.ui:143
 msgid "Paste"
 msgstr "貼り付け"
 
-#: data/gtk/menus.ui:48 data/gtk/menus.ui:109 data/gtk/menus.ui:178
+#: data/gtk/menus.ui:55 data/gtk/menus.ui:148
 msgid "Delete"
 msgstr "削除"
 
-#: data/gtk/menus.ui:54 data/gtk/menus.ui:115 data/gtk/menus.ui:182
+#: data/gtk/menus.ui:61 data/gtk/menus.ui:155
 msgid "Select All"
 msgstr "全て選択"
 
-#: data/gtk/menus.ui:62 data/gtk/menus.ui:191
+#: data/gtk/menus.ui:70
 msgid "Search..."
 msgstr "検索..."
 
-#: data/gtk/menus.ui:66 data/gtk/menus.ui:203
+#: data/gtk/menus.ui:75
 msgid "Replace..."
 msgstr "置換..."
 
-#: data/gtk/menus.ui:72
+#: data/gtk/menus.ui:82
 msgid "Choose Font..."
 msgstr "フォントを選ぶ"
 
-#: data/gtk/menus.ui:78 data/gtk/menus.ui:233
+#: data/gtk/menus.ui:86
+msgid "Theme"
+msgstr ""
+
+#: data/gtk/menus.ui:89
+msgid "Default"
+msgstr ""
+
+#: data/gtk/menus.ui:94
+msgid "DarkGray"
+msgstr ""
+
+#: data/gtk/menus.ui:99
+msgid "Console"
+msgstr ""
+
+#: data/gtk/menus.ui:108
+msgid "Preferences..."
+msgstr ""
+
+#: data/gtk/menus.ui:112
 msgid "About..."
 msgstr "このアプリについて..."
-
-#: data/gtk/menus.ui:126
-msgid "File"
-msgstr "ファイル"
-
-#: data/gtk/menus.ui:129
-msgid "New"
-msgstr "新規"
-
-#: data/gtk/menus.ui:147
-msgid "Quit"
-msgstr "終了"
-
-#: data/gtk/menus.ui:188
-msgid "Search"
-msgstr "検索"
-
-#: data/gtk/menus.ui:195
-msgid "Search Next"
-msgstr "次を検索"
-
-#: data/gtk/menus.ui:199
-msgid "Search Previous"
-msgstr "前を検索"
-
-#: data/gtk/menus.ui:207
-msgid "Jump"
-msgstr "ジャンプ"
-
-#: data/gtk/menus.ui:213
-msgid "View"
-msgstr "表示"
-
-#: data/gtk/menus.ui:216
-msgid "Go Next Page"
-msgstr "次のページへ移動"
-
-#: data/gtk/menus.ui:220
-msgid "Go Previous Page"
-msgstr "前のページへ移動"
-
-#: data/gtk/menus.ui:224
-msgid "Go Page..."
-msgstr "ページを指定して移動"
-
-#: data/gtk/menus.ui:230
-msgid "Help"
-msgstr "ヘルプ"
 
 #: data/genkoyoshi.appdata.xml.in:8 data/genkoyoshi.desktop.in:3
 msgid "Genkoyoshi"
@@ -177,10 +146,12 @@ msgid "A text editor that allows you to edit vertical text."
 msgstr "縦書きができるテキストエディタです。"
 
 #: data/genkoyoshi.appdata.xml.in:11
-msgid "日本で一般的な原稿用紙に似た見た目をしたテキストエディタです。日本語の縦書き編集ができます。"
+msgid ""
 "A text editor that looks like manuscript paper (genkoyoshi) and allows you "
-"to edit vertical text. It is mainly intended for Japanese editing."
+"to edit vertical text. It is mainly intended for Japanese editing. Of course, other languages can be used normally."
 msgstr ""
+"縦書きができる原稿用紙によく似た見た目のテキストエディターです。主に日本語での使用を念頭に置いています。"
+"もちろん、他の言語を使用することもできます。"
 
 #: data/genkoyoshi.appdata.xml.in:54
 msgid "Initial release."

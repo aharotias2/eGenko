@@ -35,6 +35,11 @@ public class GenkoYoshi : Gtk.DrawingArea {
     public int page { get; set; default = 0; }
 
     /**
+     * 設定
+     */
+    public AppConfig config { get; set; }
+
+    /**
      * 原稿用紙を描画する際に使うフォントの設定
      */
     public FontSetting font { get; set; default = FontSetting() {
@@ -48,7 +53,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
     /**
      * 原稿用紙を描画する際に使うカラーパレットのようなもの。
      */
-    public ColorSetting color { get; set; default = PredefinedColorSetting.THEME_DEFAULT; }
+    public ColorSetting color { get; set; default = PresetColorSetting.THEME_DEFAULT; }
 
     /**
      * テキスト編集処理を行うオブジェクト。
@@ -487,7 +492,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
                     if (elem.str == "\n") {
                         // 改行文字を表示する処理
                         // is_newline_visibleが設定されている場合は改行を表示する。
-                        if (color.is_newline_visible) {
+                        if (config.is_newline_visible) {
                             cairo.set_source_rgba(color.newline_font.red, color.newline_font.green, color.newline_font.blue, color.newline_font.alpha);
                             cairo.show_text("←");
                             cairo.set_source_rgba(color.font.red, color.font.green, color.font.blue, color.font.alpha);
@@ -496,7 +501,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
                     } else if (elem.str == "　") {
                         // 空白文字を表示する処理
                         // is_space_visibleが設定されている場合は空白文字を表示する。
-                        if (color.is_space_visible) {
+                        if (config.is_space_visible) {
                             cairo.set_source_rgba(color.space.red, color.space.green, color.space.blue, color.space.alpha);
                             cairo.show_text("□");
                             cairo.set_source_rgba(color.font.red, color.font.green, color.font.blue, color.font.alpha);
@@ -505,7 +510,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
                     } else if (elem.str == " ") {
                         // 半角空白文字を表示する処理
                         // is_space_visibleが設定されている場合は空白文字を表示する。
-                        if (color.is_space_visible) {
+                        if (config.is_space_visible) {
                             cairo.set_source_rgba(color.space.red, color.space.green, color.space.blue, color.space.alpha);
                             cairo.rectangle(
                                 position[x, y].x + cell_width * 0.25,

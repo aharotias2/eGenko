@@ -17,7 +17,7 @@
  * Copyright 2022 Takayuki Tanaka
  */
 
-namespace PredefinedColorSetting {
+namespace PresetColorSetting {
     const ColorSetting THEME_DEFAULT = {
         { 1.0, 1.0, 1.0, 1.0 }, // background
         { 0.1, 0.1, 0.1, 1.0 }, // font
@@ -25,9 +25,7 @@ namespace PredefinedColorSetting {
         { 0.5, 0.5, 1.0, 1.0 }, // selection_border
         { 0.95, 0.95, 1.0, 1.0 }, // selection_bg
         { 0.5, 0.5, 0.0, 1.0 }, // preedit_font
-        true, // is_newline_visible
         { 0.5, 0.5, 1.0, 1.0 }, // newline_font
-        true, // is_space_visible
         { 0.5, 0.5, 1.0, 1.0 } // space
     };
 
@@ -38,9 +36,7 @@ namespace PredefinedColorSetting {
         { 0.5, 0.5, 1.0, 1.0 }, // selection_border
         { 0.4, 0.4, 0.3, 1.0 }, // selection_bg
         { 1.0, 1.0, 0.8, 1.0 }, // preedit_font
-        true, // is_newline_visible
         { 0.5, 0.5, 1.0, 1.0 }, // newline_font
-        true, // is_space_visible
         { 0.5, 0.5, 1.0, 1.0 } // space
     };
 
@@ -51,9 +47,7 @@ namespace PredefinedColorSetting {
         { 0.5, 0.5, 1.0, 1.0 }, // selection_border
         { 0.4, 0.4, 0.3, 1.0 }, // selection_bg
         { 1.0, 1.0, 1.0, 1.0 }, // preedit_font
-        true, // is_newline_visible
         { 0.3, 0.5, 0.9, 1.0 }, // newline_font
-        true, // is_space_visible
         { 0.3, 0.5, 0.9, 1.0 } // space
     };
 }

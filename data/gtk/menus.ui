@@ -82,9 +82,15 @@
 	<attribute name="label" translatable="yes">Choose Font...</attribute>
 	<attribute name="action">win.choose-font</attribute>
       </item>
-      <submenu id="edit-menu">
+      <submenu id="theme-menu">
 	<attribute name="label" translatable="yes">Theme</attribute>
 	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">Customize...</attribute>
+	    <attribute name="action">win.customize-theme</attribute>
+	  </item>
+	</section>
+	<section id="theme-menu-section">
 	  <item>
 	    <attribute name="label" translatable="yes">Default</attribute>
 	    <attribute name="action">win.change-theme</attribute>
@@ -104,6 +110,10 @@
       </submenu>
     </section>
     <section>
+      <item>
+	<attribute name="label" translatable="yes">Preferences...</attribute>
+	<attribute name="action">win.show-config-dialog</attribute>
+      </item>
       <item>
 	<attribute name="label" translatable="yes">About...</attribute>
 	<attribute name="action">win.show_info</attribute>

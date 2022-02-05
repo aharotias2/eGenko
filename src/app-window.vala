@@ -38,28 +38,25 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
     private Gtk.Button replace_bar_replace_button;
     private Gtk.Button replace_bar_replace_all_button;
     private Gtk.Button replace_bar_close_button;
+    private AppConfigDialog? config_dialog;
 
     private SimpleAction save_action;
     private SimpleAction save_as_action;
     private SimpleAction search_action;
     private SimpleAction replace_action;
     private SimpleAction change_theme_action;
-    private Gee.Map<string, ColorSetting?> theme_map;
+    private AppConfig config;
 
     private FocusList focus_list;
 
-    public GenkoyoshiAppWindow(Gtk.Application app) {
+    public GenkoyoshiAppWindow(Gtk.Application app, AppConfig config) {
         application = app;
+        this.config = config;
         init_action_map();
         focus_list = new FocusList();
-        theme_map = new Gee.HashMap<string, ColorSetting?>();
-        theme_map["Default"] = PredefinedColorSetting.THEME_DEFAULT;
-        theme_map["Dark"] = PredefinedColorSetting.THEME_DARK;
-        theme_map["Console"] = PredefinedColorSetting.THEME_CONSOLE;
 
         var headerbar = new Gtk.HeaderBar();
         {
-            /* previous, next, open, and save buttons at the left of the headerbar */
             var header_buttons = new Gtk.Box(HORIZONTAL, 5);
             {
                 var navigation_box = new Gtk.ButtonBox(HORIZONTAL) {
@@ -89,6 +86,13 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
             {
                 menu_button.set_menu_model(application.get_menu_by_id("hamburger-menu"));
                 menu_button.image = new Gtk.Image.from_icon_name("open-menu-symbolic", SMALL_TOOLBAR);
+                
+                var theme_menu_section = application.get_menu_by_id("theme-menu-section");
+                foreach (var theme_name in config.theme_map.keys) {
+                    if (theme_name != "Default" && theme_name != "Dark" && theme_name != "Console") {
+                        theme_menu_section.append(theme_name, @"win.change-theme('$(theme_name)')");
+                    }
+                }
             }
 
             headerbar.pack_start(header_buttons);
@@ -265,6 +269,8 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
                 page_label.label = "%d/%d".printf(page + 1, total_pages);
                 prev_page_button.sensitive = page > 0;
             });
+            genkoholder.genkoyoshi.config = config;
+            genkoholder.genkoyoshi.color = config.theme_map[config.selected_theme_name];
         }
         return genkoholder;
     }
@@ -338,16 +344,38 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         replace_action.activate.connect(() => do_replace());
         add_action(replace_action);
 
-        change_theme_action = new SimpleAction("change-theme", VariantType.STRING);
+        change_theme_action = new SimpleAction.stateful("change-theme", VariantType.STRING,
+                new Variant("s", config.selected_theme_name));
         change_theme_action.activate.connect((param) => {
+            change_theme_action.set_state(param);
             var theme_name = param.get_string();
-            var theme = theme_map[theme_name];
+            var theme = config.theme_map[theme_name];
             if (theme == null) {
                 return;
             }
             genkoholder.genkoyoshi.color = theme;
+            config.selected_theme_name = theme_name;
+            genkoholder.genkoyoshi.queue_draw();
         });
         add_action(change_theme_action);
+
+        var show_config_dialog_action = new SimpleAction("show-config-dialog", null);
+        show_config_dialog_action.activate.connect(() => {
+            if (config_dialog == null) {
+                config_dialog = new AppConfigDialog(config);
+                config_dialog.destroy.connect(() => {
+                    config_dialog = null;
+                });
+            }
+            config_dialog.show_all();
+        });
+        add_action(show_config_dialog_action);
+        
+        var customize_theme_action = new SimpleAction("customize-theme", null);
+        customize_theme_action.activate.connect(() => {
+            do_customize_theme();
+        });
+        add_action(customize_theme_action);
     }
 
     /**
@@ -563,6 +591,33 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         genkoholder.genkoyoshi.model.delete_selection();
     }
 
+    /**
+     * ダイアログを表示し、カラーテーマをカスタマイズする。
+     */
+    private void do_customize_theme() {
+        var color_setting_dialog = new ColorSettingDialog(config);
+        color_setting_dialog.show_all();
+        int res = color_setting_dialog.run();
+        if (res == Gtk.ResponseType.ACCEPT || res == Gtk.ResponseType.APPLY) {
+            string new_theme_name = color_setting_dialog.get_theme_name();
+            if (new_theme_name != "") {
+                var theme_menu = application.get_menu_by_id("theme-menu-section");
+                if (!config.theme_map.has_key(new_theme_name)) {
+                    theme_menu.append(new_theme_name, @"win.change-theme('$(new_theme_name)')");
+                }
+                if (new_theme_name != "Default" && new_theme_name != "Dark" && new_theme_name != "Console") {
+                    config.theme_map[new_theme_name] = color_setting_dialog.get_color_setting();
+                }
+                if (res == Gtk.ResponseType.APPLY) {
+                    config.selected_theme_name = new_theme_name;
+                    genkoholder.genkoyoshi.color = config.theme_map[new_theme_name];
+                    genkoholder.genkoyoshi.queue_draw();
+                }
+            }
+        }
+        color_setting_dialog.close();
+    }
+    
     /**
      * 「全て選択」の処理を行う。
      */

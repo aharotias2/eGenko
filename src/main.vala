@@ -19,11 +19,13 @@
 
 public class GenkoYoshiApp : Gtk.Application {
     private Gtk.CssProvider css_provider;
+    public AppConfig config { get; construct set; }
 
     public GenkoYoshiApp() {
         Object(
             application_id: APP_ID,
-            flags: ApplicationFlags.FLAGS_NONE
+            flags: ApplicationFlags.FLAGS_NONE,
+            config: new AppConfig()
         );
     }
 
@@ -32,6 +34,11 @@ public class GenkoYoshiApp : Gtk.Application {
     }
 
     public override void activate() {
+        try {
+            config.read_user_config_file();
+        } catch (Error e) {
+            printerr("%s\n", e.message);
+        }
         setup_css_provider();
         create_new_window();
     }
@@ -42,12 +49,23 @@ public class GenkoYoshiApp : Gtk.Application {
     }
 
     private void create_new_window() {
-        var window = new GenkoyoshiAppWindow(this);
+        var window = new GenkoyoshiAppWindow(this, config);
         window.require_quit.connect(() => {
             quit_application();
         });
-        Gtk.StyleContext.add_provider_for_screen(
-                window.get_screen(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+        window.destroy.connect(() => {
+            if (get_windows().length() <= 1) {
+                try {
+                    config.write_user_config_file();
+                } catch (Error e) {
+                    printerr("%s\n", e.message);
+                }
+            }
+        });
+        if (get_windows().length() <= 1) {
+            Gtk.StyleContext.add_provider_for_screen(
+                    window.get_screen(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+        }
     }
 
     private static void setup_locale() {

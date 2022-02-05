@@ -61,7 +61,11 @@ executable(
     'src/region.vala',
     'src/app-error.vala',
     'src/app-consts.vala',
+    'src/app-config.vala',
+    'src/app-config-dialog.vala',
     'src/color-setting.vala',
+    'src/color-setting-dialog.vala',
+    'src/preset-color-settings.vala',
     'src/font-setting.vala',
     'src/edit-mode.vala',
     'src/wrap-mode.vala',
@@ -80,7 +84,6 @@ executable(
     'src/actions/abstract-edit-action.vala',
     'src/actions/insert-text-action.vala',
     'src/actions/delete-region-action.vala',
-    'src/predefined-color-settings.vala',
     resources
   ],
   dependencies: [

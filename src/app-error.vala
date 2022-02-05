@@ -20,5 +20,6 @@
 public errordomain AppError {
     LOGICAL_ERROR,
     INDEX_OUT_OF_BOUNDS,
-    NO_FILE_SPECIFIED
+    NO_FILE_SPECIFIED,
+    CONFIG_ERROR
 }
