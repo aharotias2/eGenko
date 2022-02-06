@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2021 Takayuki Tanaka
+ * Copyright 2022 Takayuki Tanaka
  */
 
 delegate void ForeachReverseCallback<T>(T element);
