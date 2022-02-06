@@ -24,11 +24,10 @@ public class AppConfig : Object {
     public string selected_theme_name { get; set; }
     public bool is_space_visible = true;
     public bool is_newline_visible = true;
+    public FontSetting font_setting;
 
     private bool does_user_config_dir_exists = false;
     private bool does_user_config_file_exists = false;
-
-    private Json.Node? json_root;
 
     public AppConfig() {
         var home_dir = Environment.get_home_dir();
@@ -70,6 +69,15 @@ public class AppConfig : Object {
                 builder.end_object();
             }
             builder.end_object();
+            builder.set_member_name("font");
+            builder.begin_object();
+            {
+                builder.set_member_name("name");
+                builder.add_string_value(font_setting.name);
+                builder.set_member_name("family");
+                builder.add_string_value(font_setting.family);
+            }
+            builder.end_object();
         }
         builder.end_object();
 
@@ -88,7 +96,7 @@ public class AppConfig : Object {
             does_user_config_file_exists = true;
             Json.Parser parser = new Json.Parser();
             parser.load_from_file(user_config_file.get_path());
-            json_root = parser.get_root();
+            var json_root = parser.get_root();
             var root_object = json_root.get_object();
             selected_theme_name = root_object.get_string_member("initial_theme_name");
             read_themes(root_object.get_object_member("themes"));
@@ -97,6 +105,7 @@ public class AppConfig : Object {
             }
             is_newline_visible = root_object.get_boolean_member("is_newline_visible");
             is_space_visible = root_object.get_boolean_member("is_space_visible");
+            font_setting = FontSetting.from_json_object(root_object.get_object_member("font"));
         }
     }
 

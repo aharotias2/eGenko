@@ -22,7 +22,7 @@ public struct FontSetting {
     public string family;
     public Cairo.FontWeight weight;
     public Cairo.FontSlant style;
-    
+
     public FontSetting.from_font_desc(string font, Pango.FontDescription font_desc) {
         name = font;
         family = font_desc.get_family();
@@ -49,5 +49,19 @@ public struct FontSetting {
             style = OBLIQUE;
             break;
         }
+    }
+
+    public FontSetting.from_json_object(Json.Object json_object) {
+        name = json_object.get_string_member("name");
+        family = json_object.get_string_member("family");
+        weight = NORMAL;
+        style = NORMAL;
+    }
+
+    public Json.Object to_json_object() {
+        Json.Object json_object = new Json.Object();
+        json_object.set_string_member("name", name);
+        json_object.set_string_member("family", family);
+        return json_object;
     }
 }

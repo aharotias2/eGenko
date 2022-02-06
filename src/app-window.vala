@@ -271,6 +271,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
             });
             genkoholder.genkoyoshi.config = config;
             genkoholder.genkoyoshi.color = config.theme_map[config.selected_theme_name];
+            genkoholder.genkoyoshi.font = config.font_setting;
         }
         return genkoholder;
     }
@@ -460,7 +461,9 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
         dialog.font = genkoholder.genkoyoshi.font.name;
         int res = dialog.run();
         if (res == Gtk.ResponseType.OK) {
-            genkoholder.genkoyoshi.font = FontSetting.from_font_desc(dialog.font, dialog.font_desc);
+            FontSetting font_setting = FontSetting.from_font_desc(dialog.font, dialog.font_desc);
+            genkoholder.genkoyoshi.font = font_setting;
+            config.font_setting = font_setting;
         }
         dialog.close();
         get_active_page().queue_draw();
