@@ -55,15 +55,10 @@ namespace VerticalFormMap {
             try {
                 vertical_form_map = new Gee.HashMap<uint32, ConvType>();
                 // JSON形式のリソースを読み込む
-                File res = File.new_for_uri("resource:///com/github/aharotias2/genkoyoshi/vertical-setting.json");
-                var dis = new DataInputStream(res.read());
-                string? line = null;
-                var sb = new StringBuilder();
-                while ((line = dis.read_line()) != null) {
-                    sb.append(line);
-                }
-                var json = Json.from_string(sb.str);
-                var root = json.get_object();
+                File res = File.new_for_uri("resource:///com/github/aharotias2/eGenko/vertical-setting.json");
+                var parser = new Json.Parser();
+                parser.load_from_stream(res.read());
+                var root = parser.get_root().get_object();
                 var vertical_setting_member = root.get_object_member("vertical-setting");
                 // 縦書きの時はセルの右上に配置する文字を格納する
                 var tu = vertical_setting_member.get_array_member("Tu");

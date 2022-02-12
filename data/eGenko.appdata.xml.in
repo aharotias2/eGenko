@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2019-2020 Tanaka Takayuki -->
 <component type="desktop">
-  <id>com.github.aharotias2.genkoyoshi</id>
-  <launchable type="desktop-id">com.github.aharotias2.genkoyoshi.desktop</launchable>
+  <id>com.github.aharotias2.eGenko</id>
+  <launchable type="desktop-id">com.github.aharotias2.eGenko.desktop</launchable>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name>Genkoyoshi</name>
+  <name>eGenko</name>
   <summary>A text editor that allows you to edit vertical text.</summary>
   <description>
     <p>A text editor that looks like manuscript paper (genkoyoshi) and allows you to edit vertical text.
@@ -13,7 +13,7 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/aharotias2/genkoyoshi/blob/main/doc/images/screenshot-1.png?raw=true</image>
+      <image>https://github.com/aharotias2/eGenko/blob/main/doc/images/screenshot-1.png?raw=true</image>
     </screenshot>
   </screenshots>
 
@@ -58,10 +58,10 @@
   </releases>
 
   <developer_name>Tanaka Takayuki</developer_name>
-  <url type="homepage">https://github.com/aharotias2/genkoyoshi</url>
-  <url type="bugtracker">https://github.com/aharotias2/genkoyoshi/issues</url>
-  <url type="help">https://github.com/aharotias2/genkoyoshi/issues</url>
-  <url type="translate">https://github.com/aharotias2/genkoyoshi</url>
+  <url type="homepage">https://github.com/aharotias2/eGeno</url>
+  <url type="bugtracker">https://github.com/aharotias2/eGenko/issues</url>
+  <url type="help">https://github.com/aharotias2/eGenko/issues</url>
+  <url type="translate">https://github.com/aharotias2/eGenko</url>
   
   <custom>
     <value key="x-appcenter-color-primary">#43d6b5</value>

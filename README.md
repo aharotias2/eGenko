@@ -1,4 +1,4 @@
-genkoyoshi
+eGenko
 ====================================================================================================
 ***CAUTION: It’s under construction! Do not use this application for professional use yet.***
 
@@ -55,7 +55,7 @@ Ubuntu (20.04)だと
 
 実行は下記のコマンドになります。
 
-	$ com.github.aharotias2.genkoyoshi
+	$ com.github.aharotias2.egenko
 
 (なお、`PATH`環境変数に実行ファイルがあるディレクトリが登録されているものとします)
 
@@ -82,4 +82,4 @@ Ubuntu (20.04)だと
 
 ----------------------------------------------------------------------------------------------------
 
-Copyright (C) 2021 田中喬之
+Copyright (C) 2022 田中喬之

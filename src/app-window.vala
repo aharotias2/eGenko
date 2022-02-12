@@ -1,23 +1,23 @@
 /*
- * This file is part of GenkoYoshi.
+ * This file is part of eGenko.
  *
- *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     eGenko is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
- *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     eGenko is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
- *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *     along with eGenko.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Copyright 2022 Takayuki Tanaka
  */
 
-public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
+public class EGenkoAppWindow : Gtk.ApplicationWindow {
     public signal void require_quit();
     public signal void require_open_file();
 
@@ -49,7 +49,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
 
     private FocusList focus_list;
 
-    public GenkoyoshiAppWindow(Gtk.Application app, AppConfig config) {
+    public EGenkoAppWindow(Gtk.Application app, AppConfig config) {
         application = app;
         this.config = config;
         init_action_map();
@@ -243,7 +243,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
 
         add(vbox1);
         set_size_request(800, 600);
-        set_title(_("Untitled") + _(" - Genkoyoshi"));
+        set_title(_("Untitled") + _(" - eGenko"));
         show_all();
 
         context_edit_menu = new Gtk.Menu.from_model(application.get_menu_by_id("context-edit-menu")) {
@@ -518,7 +518,7 @@ public class GenkoyoshiAppWindow : Gtk.ApplicationWindow {
             if (!genkoholder.has_file || save_mode == RENAME) {
                 genkoholder.set_filepath(filename_for_save);
                 debug("%s (%s)", filename_for_save, File.new_for_path(filename_for_save).get_basename());
-                set_title(genkoholder.get_filename() + _(" - GenkoYoshi"));
+                set_title(genkoholder.get_filename() + _(" - eGenko"));
             }
             save_action.set_enabled(false);
             save_as_action.set_enabled(true);

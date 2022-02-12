@@ -1,27 +1,27 @@
 /*
- * This file is part of GenkoYoshi.
+ * This file is part of eGenko.
  *
- *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     eGenko is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
- *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     eGenko is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
- *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *     along with eGenko.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Copyright 2022 Takayuki Tanaka
  */
 
-public class GenkoYoshiApp : Gtk.Application {
+public class EGenkoApp : Gtk.Application {
     private Gtk.CssProvider css_provider;
     public AppConfig config { get; construct set; }
 
-    public GenkoYoshiApp() {
+    public EGenkoApp() {
         Object(
             application_id: APP_ID,
             flags: ApplicationFlags.FLAGS_NONE,
@@ -45,11 +45,11 @@ public class GenkoYoshiApp : Gtk.Application {
 
     private void setup_css_provider() {
         css_provider = new Gtk.CssProvider();
-        css_provider.load_from_resource("/com/github/aharotias2/genkoyoshi/app-style.css");
+        css_provider.load_from_resource("/com/github/aharotias2/eGenko/app-style.css");
     }
 
     private void create_new_window() {
-        var window = new GenkoyoshiAppWindow(this, config);
+        var window = new EGenkoAppWindow(this, config);
         window.require_quit.connect(() => {
             quit_application();
         });
@@ -77,7 +77,7 @@ public class GenkoYoshiApp : Gtk.Application {
 
     public static int main(string[] argv) {
         setup_locale();
-        var app = new GenkoYoshiApp();
+        var app = new EGenkoApp();
         return app.run();
     }
 }

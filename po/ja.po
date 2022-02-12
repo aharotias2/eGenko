@@ -1,13 +1,13 @@
-# Japanese translations for com.github.aharotias2.genkoyoshi package.
-# Copyright (C) 2021 THE com.github.aharotias2.genkoyoshi'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the com.github.aharotias2.genkoyoshi package.
-# Automatically generated, 2021.
+# Japanese translations for com.github.aharotias2.eGenko package.
+# Copyright (C) 2021 THE com.github.aharotias2.eGenko'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.github.aharotias2.eGenko package.
+# Automatically generated, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: com.github.aharotias2.genkoyoshi\n"
+"Project-Id-Version: com.github.aharotias2.eGenko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-05 14:16+0900\n"
+"POT-Creation-Date: 2022-02-12 19:41+0900\n"
 "PO-Revision-Date: 2021-12-24 00:23+0900\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,49 +17,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/app-window.vala:184
+#: src/app-window.vala:191
 msgid "Replace"
 msgstr "置換..."
 
-#: src/app-window.vala:189
+#: src/app-window.vala:196
 msgid "Replace All"
 msgstr "置換..."
 
-#: src/app-window.vala:239
+#: src/app-window.vala:246
 msgid "Untitled"
 msgstr "無題"
 
-#: src/app-window.vala:239
-msgid " - Genkoyoshi"
+#: src/app-window.vala:246 src/app-window.vala:521
+msgid " - eGenko"
 msgstr " - 原稿用紙"
 
-#: src/app-window.vala:422
+#: src/app-window.vala:436
 msgid "Open file"
 msgstr "ファイルを開く"
 
-#: src/app-window.vala:422 src/app-window.vala:468
+#: src/app-window.vala:436 src/app-window.vala:484
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/app-window.vala:422
+#: src/app-window.vala:436
 msgid "Open"
 msgstr "開く"
 
-#: src/app-window.vala:446
+#: src/app-window.vala:460
 msgid "Choose Font"
 msgstr "フォントを選ぶ"
 
-#: src/app-window.vala:467 src/app-window.vala:468 data/gtk/menus.ui:13
+#: src/app-window.vala:483 src/app-window.vala:484 data/gtk/menus.ui:13
 msgid "Save"
 msgstr "保存する"
 
-#: src/app-window.vala:490
+#: src/app-window.vala:506
 msgid "File already exists. Do you want to overwrite it?"
 msgstr "ファイルはすでに存在します。上書きしますか？"
-
-#: src/app-window.vala:505
-msgid " - GenkoYoshi"
-msgstr " - 原稿用紙"
 
 #: data/gtk/menus.ui:8
 msgid "Open File..."
@@ -73,31 +69,31 @@ msgstr "名前をつけて保存"
 msgid "Edit"
 msgstr "編集"
 
-#: data/gtk/menus.ui:28 data/gtk/menus.ui:121
+#: data/gtk/menus.ui:28 data/gtk/menus.ui:127
 msgid "Undo"
 msgstr "元に戻す"
 
-#: data/gtk/menus.ui:33 data/gtk/menus.ui:126
+#: data/gtk/menus.ui:33 data/gtk/menus.ui:132
 msgid "Redo"
 msgstr "やり直す"
 
-#: data/gtk/menus.ui:40 data/gtk/menus.ui:133
+#: data/gtk/menus.ui:40 data/gtk/menus.ui:139
 msgid "Cut"
 msgstr "切り取り"
 
-#: data/gtk/menus.ui:45 data/gtk/menus.ui:138
+#: data/gtk/menus.ui:45 data/gtk/menus.ui:144
 msgid "Copy"
 msgstr "コピー"
 
-#: data/gtk/menus.ui:50 data/gtk/menus.ui:143
+#: data/gtk/menus.ui:50 data/gtk/menus.ui:149
 msgid "Paste"
 msgstr "貼り付け"
 
-#: data/gtk/menus.ui:55 data/gtk/menus.ui:148
+#: data/gtk/menus.ui:55 data/gtk/menus.ui:154
 msgid "Delete"
 msgstr "削除"
 
-#: data/gtk/menus.ui:61 data/gtk/menus.ui:155
+#: data/gtk/menus.ui:61 data/gtk/menus.ui:161
 msgid "Select All"
 msgstr "全て選択"
 
@@ -118,53 +114,57 @@ msgid "Theme"
 msgstr ""
 
 #: data/gtk/menus.ui:89
+msgid "Customize..."
+msgstr ""
+
+#: data/gtk/menus.ui:95
 msgid "Default"
 msgstr ""
 
-#: data/gtk/menus.ui:94
+#: data/gtk/menus.ui:100
 msgid "DarkGray"
 msgstr ""
 
-#: data/gtk/menus.ui:99
+#: data/gtk/menus.ui:105
 msgid "Console"
 msgstr ""
 
-#: data/gtk/menus.ui:108
+#: data/gtk/menus.ui:114
 msgid "Preferences..."
 msgstr ""
 
-#: data/gtk/menus.ui:112
+#: data/gtk/menus.ui:118
 msgid "About..."
 msgstr "このアプリについて..."
 
-#: data/genkoyoshi.appdata.xml.in:8 data/genkoyoshi.desktop.in:3
-msgid "Genkoyoshi"
-msgstr "原稿用紙"
+#: data/eGenko.appdata.xml.in:8 data/eGenko.desktop.in:3
+msgid "eGenko"
+msgstr "eGenko"
 
-#: data/genkoyoshi.appdata.xml.in:9
+#: data/eGenko.appdata.xml.in:9
 msgid "A text editor that allows you to edit vertical text."
 msgstr "縦書きができるテキストエディタです。"
 
-#: data/genkoyoshi.appdata.xml.in:11
+#: data/eGenko.appdata.xml.in:11
 msgid ""
 "A text editor that looks like manuscript paper (genkoyoshi) and allows you "
-"to edit vertical text. It is mainly intended for Japanese editing. Of course, other languages can be used normally."
+"to edit vertical text. It is mainly intended for Japanese editing."
 msgstr ""
-"縦書きができる原稿用紙によく似た見た目のテキストエディターです。主に日本語での使用を念頭に置いています。"
-"もちろん、他の言語を使用することもできます。"
+"縦書きができる原稿用紙によく似た見た目のテキストエディターです。主に日本語で"
+"の使用を念頭に置いています。もちろん、他の言語を使用することもできます。"
 
-#: data/genkoyoshi.appdata.xml.in:54
+#: data/eGenko.appdata.xml.in:54
 msgid "Initial release."
 msgstr "最初のリリース"
 
-#: data/genkoyoshi.appdata.xml.in:60
+#: data/eGenko.appdata.xml.in:60
 msgid "Tanaka Takayuki"
 msgstr "田中喬之"
 
-#: data/genkoyoshi.desktop.in:4
+#: data/eGenko.desktop.in:4
 msgid "Vertical Text Editor"
 msgstr "縦書きテキストエディタ"
 
-#: data/genkoyoshi.desktop.in:12
+#: data/eGenko.desktop.in:12
 msgid "Text;Japanese;Editor;Vertical;"
 msgstr ""

@@ -1,18 +1,18 @@
 /*
- * This file is part of GenkoYoshi.
+ * This file is part of eGenko.
  *
- *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     eGenko is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
- *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     eGenko is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
- *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *     along with eGenko.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Copyright 2022 Takayuki Tanaka
  */

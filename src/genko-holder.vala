@@ -1,18 +1,18 @@
 /*
- * This file is part of GenkoYoshi.
+ * This file is part of eGenko.
  *
- *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     eGenko is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
- *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     eGenko is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
- *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *     along with eGenko.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Copyright 2022 Takayuki Tanaka
  */
@@ -23,7 +23,7 @@
  */
 public class GenkoHolder : Gtk.Bin {
     public const string MESSAGE_NO_FILE_SPECIFIED = "ファイルが指定されていません。";
-    public GenkoYoshi genkoyoshi { get; set; }
+    public Genkoyoshi genkoyoshi { get; set; }
 
     /**
      * 原稿用紙にファイルが紐付いている場合にはtrueを、ファイルが紐付いていない場合にはfalseを返す。
@@ -97,7 +97,7 @@ public class GenkoHolder : Gtk.Bin {
      * 原稿用紙を内部で生成する。
      */
     public GenkoHolder() {
-        genkoyoshi = new GenkoYoshi();
+        genkoyoshi = new Genkoyoshi();
         genkoyoshi.require_context_menu.connect((event) => {
             require_context_menu(event);
         });
@@ -110,7 +110,7 @@ public class GenkoHolder : Gtk.Bin {
     /**
      * 原稿用紙ウィジェットを外部から設定する場合にはこのコンストラクタを使う。
      */
-    public GenkoHolder.with_genkoyoshi(GenkoYoshi genkoyoshi) {
+    public GenkoHolder.with_genkoyoshi(Genkoyoshi genkoyoshi) {
         this.genkoyoshi = genkoyoshi;
         add(genkoyoshi);
     }
@@ -120,7 +120,7 @@ public class GenkoHolder : Gtk.Bin {
      */
     public GenkoHolder.with_file(File file) {
         this.file = file;
-        genkoyoshi = new GenkoYoshi.with_model(new TextModel.from_file(file));
+        genkoyoshi = new Genkoyoshi.with_model(new TextModel.from_file(file));
         genkoyoshi.require_context_menu.connect((event) => {
             require_context_menu(event);
         });

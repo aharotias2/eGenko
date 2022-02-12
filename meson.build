@@ -1,4 +1,4 @@
-project('com.github.aharotias2.genkoyoshi', 'vala', 'c', version: '0.0.1')
+project('com.github.aharotias2.eGenko', 'vala', 'c', version: '0.0.1')
 
 i18n = import('i18n')
 
@@ -17,15 +17,15 @@ add_project_arguments(
 
 gnome = import('gnome')
 resources = gnome.compile_resources(
-  'genkoyoshi.resources',
+  'eGenko.resources',
   'data/gresources.xml',
   source_dir: 'data'
 )
 
 i18n.merge_file(
-    input: join_paths('data', 'genkoyoshi.desktop.in'),
+    input: join_paths('data', 'eGenko.desktop.in'),
     output: meson.project_name() + '.desktop',
-    po_dir: join_paths(meson.source_root(), 'po', 'extra'),
+    po_dir: join_paths(meson.source_root(), 'po'),
     type: 'desktop',
     install: true,
     install_dir: join_paths(get_option('datadir'), 'applications')
@@ -49,7 +49,7 @@ project_config_dep = declare_dependency(
 )
 
 executable(
-  'com.github.aharotias2.genkoyoshi',
+  meson.project_name(),
   [
     'src/main.vala',
     'src/app-window.vala',

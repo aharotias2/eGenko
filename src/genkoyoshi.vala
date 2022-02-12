@@ -1,18 +1,18 @@
 /*
- * This file is part of GenkoYoshi.
+ * This file is part of eGenko.
  *
- *     GenkoYoshi is free software: you can redistribute it and/or modify
+ *     eGenko is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
- *     GenkoYoshi is distributed in the hope that it will be useful,
+ *     eGenko is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
- *     along with GenkoYoshi.  If not, see <http://www.gnu.org/licenses/>.
+ *     along with eGenko.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Copyright 2022 Takayuki Tanaka
  */
@@ -21,7 +21,7 @@
  * 原稿用紙をウィジェット。
  * 画面の描画と、ボタン押下イベント、キー入力イベントを処理する。
  */
-public class GenkoYoshi : Gtk.DrawingArea {
+public class Genkoyoshi : Gtk.DrawingArea {
     /**
      * コンテキストメニューの表示を要求する。
      */
@@ -57,7 +57,7 @@ public class GenkoYoshi : Gtk.DrawingArea {
 
     /**
      * テキスト編集処理を行うオブジェクト。
-     * GenkoyoshiクラスではこのTextModelの描画とイベント処理に徹するようにする。
+     * eGenkoクラスではこのTextModelの描画とイベント処理に徹するようにする。
      */
     public TextModel model {
         get {
@@ -95,12 +95,12 @@ public class GenkoYoshi : Gtk.DrawingArea {
     private bool is_fit_to_window = true;
     private bool is_button_pressed = false;
 
-    public GenkoYoshi() {
+    public Genkoyoshi() {
         model = new TextModel();
         init();
     }
 
-    public GenkoYoshi.with_model(TextModel model) {
+    public Genkoyoshi.with_model(TextModel model) {
         this.model = model;
         init();
     }
@@ -183,10 +183,10 @@ public class GenkoYoshi : Gtk.DrawingArea {
             saved_width = allocation.width;
             saved_height = allocation.height;
         }
-        debug("GenkoYoshi size allocated.");
+        debug("Genkoyoshi size allocated.");
         debug("New allocation: x = %d, y = %d, width = %d, height = %d", allocation.x, allocation.y, allocation.width, allocation.height);
         if (is_fit_to_window) {
-            debug("GenkoYoshi is fit to this window.");
+            debug("Genkoyoshi is fit to this window.");
             double rate1 = 2.0 / 3.1;
             double rate2 = (double) allocation.height / (double) allocation.width;
             if (rate1 < rate2) {

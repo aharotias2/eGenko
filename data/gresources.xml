@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/aharotias2/genkoyoshi">
+  <gresource prefix="/com/github/aharotias2/eGenko">
     <file>app-style.css</file>
     <file>vertical-setting.json</file>
     <file preprocess="xml-stripblanks">gtk/menus.ui</file>
