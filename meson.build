@@ -92,6 +92,14 @@ executable(
   install_dir: get_option('prefix') / 'bin'
 )
 
+foreach size : ['16', '24', '32', '48', '64', '128', '512']
+  install_data(
+    'data/icons/@0@/@1@.png'.format(size, meson.project_name()),
+    install_dir: get_option('datadir') / 'icons/hicolor/@0@x@0@/apps'.format(size)
+  )
+endforeach
+
+meson.add_install_script('meson/post_install.py')
 
 # テストの設定
 
