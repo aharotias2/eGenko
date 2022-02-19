@@ -1,12 +1,12 @@
 [Desktop Entry]
 Name=eGenko
 GenericName=Vertical Text Editor
-Commenct=A text editor that looks like manuscript paper (genkoyoshi) and allows you to edit vertical text. It is mainly intended for Japanese editing.
+Comment=A text editor that looks like manuscript paper (genkoyoshi) and allows you to edit vertical text. It is mainly intended for Japanese editing.
 MimeType=text/plain;
 Exec=com.github.aharotias2.eGenko %F
 Icon=com.github.aharotias2.eGenko
 Type=Application
 Terminal=false
-Categories=Accessories;
+Categories=GTK;Utility;TextEditor;
 Keywords=Text;Japanese;Editor;Vertical;
 
