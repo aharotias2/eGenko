@@ -1,0 +1,169 @@
+# ITALIAN TRANSLATION FOR eGenko.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.github.aharotias2.eGenko package.
+# Albano Battistella <albano_battistella@hotmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: com.github.aharotias2.eGenko\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-12 19:41+0900\n"
+"PO-Revision-Date: 2022-03-06 14:05+0100\n"
+"Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
+"Language-Team: It <albano_battistella@hotmail.com>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/app-window.vala:191
+msgid "Replace"
+msgstr "Sostituisci"
+
+#: src/app-window.vala:196
+msgid "Replace All"
+msgstr "Sostituisci tutto"
+
+#: src/app-window.vala:246
+msgid "Untitled"
+msgstr "Senza titolo"
+
+#: src/app-window.vala:246 src/app-window.vala:521
+msgid " - eGenko"
+msgstr "- eGenko"
+
+#: src/app-window.vala:436
+msgid "Open file"
+msgstr "Apri file"
+
+#: src/app-window.vala:436 src/app-window.vala:484
+msgid "Cancel"
+msgstr "Cancella"
+
+#: src/app-window.vala:436
+msgid "Open"
+msgstr "Apri"
+
+#: src/app-window.vala:460
+msgid "Choose Font"
+msgstr "Scegli Font"
+
+#: src/app-window.vala:483 src/app-window.vala:484 data/gtk/menus.ui:13
+msgid "Save"
+msgstr "Salva"
+
+#: src/app-window.vala:506
+msgid "File already exists. Do you want to overwrite it?"
+msgstr "Il file esiste già. Vuoi sovrascriverlo?"
+
+#: data/gtk/menus.ui:8
+msgid "Open File..."
+msgstr "Apri File..."
+
+#: data/gtk/menus.ui:18
+msgid "Save As..."
+msgstr "Salva come..."
+
+#: data/gtk/menus.ui:25
+msgid "Edit"
+msgstr "Modifica"
+
+#: data/gtk/menus.ui:28 data/gtk/menus.ui:127
+msgid "Undo"
+msgstr "Annulla"
+
+#: data/gtk/menus.ui:33 data/gtk/menus.ui:132
+msgid "Redo"
+msgstr "Rifai"
+
+#: data/gtk/menus.ui:40 data/gtk/menus.ui:139
+msgid "Cut"
+msgstr "Taglia"
+
+#: data/gtk/menus.ui:45 data/gtk/menus.ui:144
+msgid "Copy"
+msgstr "Copia"
+
+#: data/gtk/menus.ui:50 data/gtk/menus.ui:149
+msgid "Paste"
+msgstr "Incolla"
+
+#: data/gtk/menus.ui:55 data/gtk/menus.ui:154
+msgid "Delete"
+msgstr "Cancella"
+
+#: data/gtk/menus.ui:61 data/gtk/menus.ui:161
+msgid "Select All"
+msgstr "Seleziona tutto"
+
+#: data/gtk/menus.ui:70
+msgid "Search..."
+msgstr "Cerca..."
+
+#: data/gtk/menus.ui:75
+msgid "Replace..."
+msgstr "Sostituisci..."
+
+#: data/gtk/menus.ui:82
+msgid "Choose Font..."
+msgstr "Scegli font..."
+
+#: data/gtk/menus.ui:86
+msgid "Theme"
+msgstr "Tema"
+
+#: data/gtk/menus.ui:89
+msgid "Customize..."
+msgstr "Personalizza..."
+
+#: data/gtk/menus.ui:95
+msgid "Default"
+msgstr "Predefinito"
+
+#: data/gtk/menus.ui:100
+msgid "DarkGray"
+msgstr "Grigio scuro"
+
+#: data/gtk/menus.ui:105
+msgid "Console"
+msgstr ""
+
+#: data/gtk/menus.ui:114
+msgid "Preferences..."
+msgstr "Preferenze..."
+
+#: data/gtk/menus.ui:118
+msgid "About..."
+msgstr "Informazioni..."
+
+#: data/eGenko.appdata.xml.in:8 data/eGenko.desktop.in:3
+msgid "eGenko"
+msgstr "eGenko"
+
+#: data/eGenko.appdata.xml.in:9
+msgid "A text editor that allows you to edit vertical text."
+msgstr "Un editor di testo che ti consente di modificare il testo verticale."
+
+#: data/eGenko.appdata.xml.in:11
+msgid ""
+"A text editor that looks like manuscript paper (genkoyoshi) and allows you "
+"to edit vertical text. It is mainly intended for Japanese editing."
+msgstr ""
+"Un editor di testo che assomiglia alla carta manoscritta (genkouyoushi) e ti consente "
+"di modificare il testo in verticale. È destinato principalmente all'editing giapponese."
+
+#: data/eGenko.appdata.xml.in:54
+msgid "Initial release."
+msgstr "Versione iniziale."
+
+#: data/eGenko.appdata.xml.in:60
+msgid "Tanaka Takayuki"
+msgstr "Tanaka Takayuki"
+
+#: data/eGenko.desktop.in:4
+msgid "Vertical Text Editor"
+msgstr "Editor di testo verticale"
+
+#: data/eGenko.desktop.in:12
+msgid "Text;Japanese;Editor;Vertical;"
+msgstr "Testo;Giapponese;Editor;Verticale;"
