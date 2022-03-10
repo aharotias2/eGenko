@@ -7,13 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.aharotias2.eGenko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-12 19:41+0900\n"
+"POT-Creation-Date: 2022-03-11 08:39+0900\n"
 "PO-Revision-Date: 2022-03-06 14:05+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: It <albano_battistella@hotmail.com>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/app-window.vala:191
@@ -144,13 +144,14 @@ msgstr "eGenko"
 msgid "A text editor that allows you to edit vertical text."
 msgstr "Un editor di testo che ti consente di modificare il testo verticale."
 
-#: data/eGenko.appdata.xml.in:11
+#: data/eGenko.appdata.xml.in:11 data/eGenko.desktop.in:5
 msgid ""
 "A text editor that looks like manuscript paper (genkoyoshi) and allows you "
 "to edit vertical text. It is mainly intended for Japanese editing."
 msgstr ""
-"Un editor di testo che assomiglia alla carta manoscritta (genkouyoushi) e ti consente "
-"di modificare il testo in verticale. È destinato principalmente all'editing giapponese."
+"Un editor di testo che assomiglia alla carta manoscritta (genkouyoushi) e ti "
+"consente di modificare il testo in verticale. È destinato principalmente "
+"all'editing giapponese."
 
 #: data/eGenko.appdata.xml.in:54
 msgid "Initial release."
