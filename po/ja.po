@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.aharotias2.eGenko\n"
-"Report-Msgid-Bugs-To: https://github.com/aharotias2/eGenko/issues\n"
-"POT-Creation-Date: 2022-03-11 08:39+0900\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-19 23:42+0900\n"
 "PO-Revision-Date: 2021-12-24 00:23+0900\n"
 "Last-Translator: Takayuki Tanaka <aharotias2@gmail.com>\n"
 "Language-Team: Japanese\n"
@@ -111,15 +111,15 @@ msgstr "フォントを選ぶ"
 
 #: data/gtk/menus.ui:86
 msgid "Theme"
-msgstr ""
+msgstr "テーマ"
 
 #: data/gtk/menus.ui:89
 msgid "Customize..."
-msgstr ""
+msgstr "カスタマイズ…"
 
 #: data/gtk/menus.ui:95
 msgid "Default"
-msgstr ""
+msgstr "デフォルト"
 
 #: data/gtk/menus.ui:100
 msgid "DarkGray"
@@ -131,7 +131,7 @@ msgstr ""
 
 #: data/gtk/menus.ui:114
 msgid "Preferences..."
-msgstr ""
+msgstr "設定…"
 
 #: data/gtk/menus.ui:118
 msgid "About..."
