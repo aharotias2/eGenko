@@ -32,7 +32,7 @@ Fedora (35)だと
 * vala
 * meson
 * libgee-devel
-* libjson-glib-devel
+* json-glib-devel
 
 Ubuntu (20.04)だと
 
