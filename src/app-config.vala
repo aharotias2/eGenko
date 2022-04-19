@@ -38,6 +38,7 @@ public class AppConfig : Object {
         var user_config_file_path = Path.build_path(Path.DIR_SEPARATOR_S, user_config_dir_path, "app.conf");
         user_config_file = File.new_for_path(user_config_file_path);
         does_user_config_file_exists = user_config_file.query_exists();
+        font_setting = FontSetting();
     }
 
     public void write_user_config_file() throws Error {

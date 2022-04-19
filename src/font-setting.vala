@@ -23,6 +23,13 @@ public struct FontSetting {
     public Cairo.FontWeight weight;
     public Cairo.FontSlant style;
 
+    public FontSetting() {
+        name = "Serif";
+        family = "Serif 10";
+        weight = NORMAL;
+        style = NORMAL;
+    }
+
     public FontSetting.from_font_desc(string font, Pango.FontDescription font_desc) {
         name = font;
         family = font_desc.get_family();
